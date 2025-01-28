@@ -1,7 +1,21 @@
 # Dungeonmind LLM RPG Adventure
 
+## Repo Setup
 
-Project organization
+1. **uv**
+This repo uses [uv](https://docs.astral.sh/uv/getting-started/installation) to install and manage dependencies,
+as well as to set up the Python environment. After installing `uv` run
+```bash
+uv python install 3.11.11
+uv sync
+```
+To set up Git hooks for code quality checks run also
+```bash
+uv run pre-commit install
+```
+
+
+## Project organization
 ```
 dungeonmind-llm-rpg-adventure/
 │

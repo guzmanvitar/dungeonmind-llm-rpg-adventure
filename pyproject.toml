@@ -1,0 +1,31 @@
+[project]
+name = "dungeonmind-llm-rpg-adventure"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "flask>=3.1.0",
+    "numpy>=2.2.2",
+    "pandas>=2.2.3",
+]
+
+[dependency-groups]
+dev = [
+    "black>=24.10.0",
+    "flake8>=7.1.1",
+    "ipdb>=0.13.13",
+    "ipykernel>=6.29.5",
+    "ipython>=8.31.0",
+    "isort>=6.0.0",
+    "jupyterlab>=4.3.4",
+    "pre-commit>=4.1.0",
+]
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+
+[tool.flake8]
+max-line-length = 100
+extend-ignore = ["E203", "W503", "E266", "F407"]
