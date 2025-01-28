@@ -3,6 +3,7 @@
 ## Repo Setup
 
 1. **uv**
+
 This repo uses [uv](https://docs.astral.sh/uv/getting-started/installation) to install and manage dependencies,
 as well as to set up the Python environment. After installing `uv` run
 ```bash
