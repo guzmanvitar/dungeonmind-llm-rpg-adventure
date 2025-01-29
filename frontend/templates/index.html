@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DungeonMind</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <header>
+        <h1>🌟DungeonMind🌟</h1>
+        <h2>AI powered adventure generator</h2>
+    </header>
+    <main>
+        <div class="parchment">
+            <h2 class="parchment-title">The Story Unfolds...</h2>
+            <div class="chat-box">
+                <div class="chat-log">
+                    <p>The Dungeon Master awaits your command...</p>
+                </div>
+                <input type="text" class="chat-input" placeholder="What will you do?">
+            </div>
+        </div>
+        <div class="dice-rolls">
+            <p>Roll a die:</p>
+            <div class="dice-buttons">
+                <button onclick="rollDice(4)">d4</button>
+                <button onclick="rollDice(6)">d6</button>
+                <button onclick="rollDice(8)">d8</button>
+                <button onclick="rollDice(10)">d10</button>
+                <button onclick="rollDice(12)">d12</button>
+                <button onclick="rollDice(20)">d20</button>
+                <button onclick="rollDice(100)">d100</button>
+            </div>
+            <p class="dice-result">🎲 Result: <span id="dice-result">-</span></p>
+        </div>
+    </main>
+    <footer>
+        <p>
+            <a href="https://github.com/guzmanvitar/dungeonmind-llm-rpg-adventure"
+               target="_blank"
+               class="footer-link">
+                Created by @guzmanvitar
+            </a>
+        </p>
+    </footer>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

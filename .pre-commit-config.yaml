@@ -32,6 +32,7 @@ repos:
       - id: check-vcs-permalinks
       - id: debug-statements
       - id: check-added-large-files
+        exclude: '\.gitattributes|static/images/.*'
       - id: check-toml
         types: [toml]
       - id: check-yaml
