@@ -34,6 +34,8 @@ dungeonmind-llm-rpg-adventure/
 │   ├── orchestrator/          # Orchestrator logic
 │   │   ├── __init__.py        #
 │   │   ├── main.py            # FastAPI orchestrator file
+│   │   ├── models.py          # Pydantic models
+│   │   └── services.py        # LLM-related service calls
 │   ├── rules_engine.py        # D&D rules validation
 │   ├── game_state_manager.py  # Game state handling
 │   ├── rag_retriever.py       # Retrieval-augmented generation logic
