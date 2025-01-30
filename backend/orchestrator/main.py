@@ -8,12 +8,21 @@ It processes user input, maintains conversation history, and generates AI-driven
 import os
 
 from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from backend.orchestrator.models import ChatRequest, ChatResponse
 from backend.orchestrator.services import LLMService, ModelFactory
 
 # Initialize FastAPI app
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Change "*" to specific domains for production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def get_llm_service() -> LLMService:

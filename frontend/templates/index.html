@@ -15,12 +15,15 @@
         <div class="parchment">
             <h2 class="parchment-title">The Story Unfolds...</h2>
             <div class="chat-box">
-                <div class="chat-log">
+                <div class="chat-log" id="chat-log">
                     <p>The Dungeon Master awaits your command...</p>
                 </div>
-                <input type="text" class="chat-input" placeholder="What will you do?">
+                <div class="chat-input-container">
+                    <input type="text" class="chat-input" id="user-input" placeholder="What will you do?">
+                    <button class="send-button" onclick="sendMessage()">➤</button>
+                </div>
             </div>
-        </div>
+                                </div>
         <div class="dice-rolls">
             <p>Roll a die:</p>
             <div class="dice-buttons">
