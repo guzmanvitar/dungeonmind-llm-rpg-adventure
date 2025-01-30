@@ -9,13 +9,18 @@ function rollDice(sides) {
     }, 500);
 }
 
+let chatHistory = []; // Stores the conversation history
+
 async function sendMessage() {
     const userInput = document.getElementById("user-input").value;
     const chatLog = document.getElementById("chat-log");
 
     if (!userInput.trim()) return;  // Prevent empty messages
 
-    // Add user message to chat log
+    // Add user message to chat history
+    chatHistory.push({ role: "user", content: userInput });
+
+    // Display user message in chat log
     chatLog.innerHTML += `<p><strong>You:</strong> ${userInput}</p>`;
     scrollToBottom(chatLog);
 
@@ -25,13 +30,16 @@ async function sendMessage() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 user_message: userInput,
-                conversation_history: []
+                conversation_history: chatHistory, // Send full history
             }),
         });
 
         if (!response.ok) throw new Error("Failed to fetch response");
 
         const data = await response.json();
+
+        // Add assistant's response to chat history
+        chatHistory.push({ role: "assistant", content: data.assistant_message });
 
         // Display assistant's response
         chatLog.innerHTML += `<p><strong>Dungeon Master:</strong> ${data.assistant_message}</p>`;
