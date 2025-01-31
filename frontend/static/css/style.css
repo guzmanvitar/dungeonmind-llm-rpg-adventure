@@ -103,6 +103,20 @@ footer {
     line-height: 1.5;
     overflow-y: auto;
     max-height: 280px; /* Keep text within the parchment */
+    padding: 0 17px; /* Top & Bottom = 0, Left & Right = 10px */
+    box-sizing: border-box; /* Ensures padding doesn’t add to total height */
+}
+
+/* Chat output blink */
+#chat-text::after {
+    content: "|";
+    animation: blink 0.8s infinite;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
 }
 
 .chat-input {
