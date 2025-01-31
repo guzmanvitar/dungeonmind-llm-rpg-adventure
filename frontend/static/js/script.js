@@ -1,6 +1,6 @@
 // Chat response logic //
 // Chat typing effect
-function typeText(element, text, speed = 50) {
+function typeText(element, text, speed = 75) {
     let i = 0;
     element.innerHTML = ""; // Clear existing text
 
@@ -15,6 +15,7 @@ function typeText(element, text, speed = 50) {
             element.innerHTML += text[i];
             element.appendChild(cursor); // Append cursor after each letter
             i++;
+            scrollToBottom(document.getElementById("chat-log")); // ✅ Scroll as text appears
             setTimeout(type, speed);
         } else {
             cursor.remove(); // Remove cursor when typing is finished
@@ -94,8 +95,11 @@ async function sendMessage() {
 }
 
 // Keep chat log scrolled to the bottom
-function scrollToBottom(element) {
-    element.scrollTop = element.scrollHeight;
+function scrollToBottom() {
+    const chatLog = document.getElementById("chat-log");
+    if (chatLog) {
+        chatLog.scrollTop = chatLog.scrollHeight;
+    }
 }
 
 // Allow for key press in user input

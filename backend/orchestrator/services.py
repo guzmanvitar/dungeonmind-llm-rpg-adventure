@@ -4,14 +4,14 @@ This module provides an abstraction layer for interacting with various language 
 It allows flexibility in switching between different models.
 """
 
-import os
+import json
 import pathlib
 from abc import ABC, abstractmethod
 
-import openai
 import yaml
+from openai import OpenAI
 
-from backend.constants import BACKEND_CONFIG
+from backend.constants import BACKEND_CONFIG, SECRETS
 
 
 class LLMService(ABC):
@@ -57,16 +57,22 @@ class OpenAIService(LLMService):
     ):
         super().__init__(model)
         self.temperature = temperature
-        openai.api_key = os.getenv("OPENAI_API_KEY", "your-api-key-here")
+
+        try:
+            with open(SECRETS / "open-ai-creds.json", encoding="utf-8") as f:
+                api_key = json.load(f).get("key")
+                self.client = OpenAI(api_key=api_key)
+        except (FileNotFoundError, KeyError, json.JSONDecodeError) as e:
+            raise ValueError(f"Error loading OpenAI credentials: {e}") from e
 
     def generate_response(self):
         messages = self.conversation_history
 
-        response = openai.ChatCompletion.create(
+        response = self.client.chat.completions.create(
             model=self.model, messages=messages, temperature=self.temperature
         )
 
-        return response["choices"][0]["message"]["content"]
+        return response.choices[0].message.content
 
 
 class SampleService(LLMService):
