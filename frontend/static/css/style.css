@@ -108,11 +108,6 @@ footer {
 }
 
 /* Chat output blink */
-#chat-text::after {
-    content: "|";
-    animation: blink 0.8s infinite;
-}
-
 @keyframes blink {
     50% {
         opacity: 0;

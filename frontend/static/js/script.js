@@ -1,4 +1,49 @@
-// Chat response logic
+// Chat response logic //
+// Chat typing effect
+function typeText(element, text, speed = 50) {
+    let i = 0;
+    element.innerHTML = ""; // Clear existing text
+
+    let cursor = document.createElement("span");
+    cursor.innerHTML = "|";
+    cursor.style.animation = "blink 0.8s infinite";
+    element.appendChild(cursor);
+
+    function type() {
+        if (i < text.length) {
+            cursor.remove(); // Remove cursor before adding new text
+            element.innerHTML += text[i];
+            element.appendChild(cursor); // Append cursor after each letter
+            i++;
+            setTimeout(type, speed);
+        } else {
+            cursor.remove(); // Remove cursor when typing is finished
+        }
+    }
+
+    type();
+}
+
+// Type initial message
+document.addEventListener("DOMContentLoaded", function () {
+    const chatLog = document.getElementById("chat-log");
+
+    // Create a new paragraph for the DungeonMind's introduction
+    let messageElement = document.createElement("p");
+    messageElement.innerHTML = "<strong>DungeonMind:</strong> ";
+    chatLog.appendChild(messageElement);
+
+    const storyText = `Between the realms of thought and reality, I dwell: the DungeonMind, the silent watcher,
+    weaving fate into form.
+
+    I have chronicled a thousand worlds, but now, the quill hovers over an empty page...
+
+    Tell me, traveler, where does your story begin? Speak, and let the tale unfold!`;
+
+    typeText(messageElement, storyText);
+});
+
+
 let chatHistory = []; // Stores the conversation history
 
 async function sendMessage() {
@@ -31,8 +76,12 @@ async function sendMessage() {
         // Add assistant's response to chat history
         chatHistory.push({ role: "assistant", content: data.assistant_message });
 
-        // Display assistant's response
-        chatLog.innerHTML += `<p><strong>Dungeon Master:</strong> ${data.assistant_message}</p>`;
+        // Display assistant's response with typing effect
+        let messageElement = document.createElement("p");
+        messageElement.innerHTML = "<strong>Dungeon Master:</strong> ";
+        chatLog.appendChild(messageElement);
+
+        typeText(messageElement, data.assistant_message, 30); // ✅ Now types out text
         scrollToBottom(chatLog);
     } catch (error) {
         console.error("Error:", error);
@@ -56,35 +105,7 @@ document.getElementById("user-input").addEventListener("keypress", function(even
     }
 });
 
-// Output chat typing effect
-function typeText(elementId, text, speed = 50) {
-    let i = 0;
-    const element = document.getElementById(elementId);
-    element.innerHTML = ""; // Clear any existing text
-
-    function type() {
-        if (i < text.length) {
-            element.innerHTML += text[i];
-            i++;
-            setTimeout(type, speed); // Adjust speed here (lower = faster)
-        }
-    }
-
-    type();
-}
-
-// Type initial message
-document.addEventListener("DOMContentLoaded", function () {
-    const storyText = `Between the realms of thought and reality, I dwell: the DungeonMind, the silent watcher,
-        weaving fate into form.
-        I have chronicled a thousand worlds, but now, the quill hovers over an empty page...
-        Tell me, traveler, where does your story begin? Speak, and let the tale unfold!`;
-
-    typeText("chat-text", storyText);
-});
-
-
-// Dice roll animation
+// Dice roll animation //
 function rollDice(sides) {
     let result = Math.floor(Math.random() * sides) + 1;
     let resultElement = document.getElementById("dice-result");
