@@ -5,47 +5,50 @@ This module provides an API for handling chat interactions with a language model
 It processes user input, maintains conversation history, and generates AI-driven responses.
 """
 
-import os
-
-from fastapi import Depends, FastAPI
+import yaml
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend.constants import BACKEND_CONFIG
 from backend.orchestrator.models import ChatRequest, ChatResponse
-from backend.orchestrator.services import LLMService, ModelFactory
+from backend.orchestrator.services import ModelFactory
 
 # Initialize FastAPI app
-app = FastAPI()
+app = FastAPI(docs_url="/")
 
+# Enable CORS for frontend communication
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Change "*" to specific domains for production
+    allow_origins=["*"],  # Adjust this for production security
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# Initialize ModelFactory with selected backend
+with open(BACKEND_CONFIG, encoding="utf-8") as file:
+    selected_backend = yaml.safe_load(file).get("selected_backend", "samplev1")
 
-def get_llm_service() -> LLMService:
-    """
-    Dependency injection for selecting the LLM service.
-    Reads the preferred model from environment variables.
-    """
-    model_name = os.getenv("LLM_BACKEND", "openai")  # Default to OpenAI
-    return ModelFactory.get_model_service(model_name)
+model_factory = ModelFactory(selected_backend)
+llm_service = model_factory.get_model_service()
 
 
 @app.post("/chat", response_model=ChatResponse)
-def chat(request: ChatRequest, llm_service: LLMService = Depends(get_llm_service)):
+def chat(request: ChatRequest):
     """
     Handles chat interactions by sending user input and conversation history to the LLM.
     """
-    assistant_reply = llm_service.generate_response(
-        request.conversation_history, request.user_message
-    )
+    if not llm_service:
+        return ChatResponse(assistant_message="Error: LLM Service not initialized.")
+
+    llm_service.conversation_history.append({"role": "user", "content": request.user_message})
+    assistant_reply = llm_service.generate_response()
+    llm_service.conversation_history.append({"role": "assistant", "content": assistant_reply})
+
     return ChatResponse(assistant_message=assistant_reply)
 
 
-# Run the server with Uvicorn (if running locally, use `uvicorn filename:app --reload`)
+# Run the server with Uvicorn (if running locally, use `uvicorn main:app --reload`)
 if __name__ == "__main__":
     import uvicorn
 
