@@ -107,6 +107,18 @@ footer {
     box-sizing: border-box; /* Ensures padding doesn’t add to total height */
 }
 
+/* Chat output blink */
+#chat-text::after {
+    content: "|";
+    animation: blink 0.8s infinite;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
+
 .chat-input {
     flex-grow: 1;
     padding: 12px 45px 12px 15px; /* Adjust spacing to fit the arrow button */
