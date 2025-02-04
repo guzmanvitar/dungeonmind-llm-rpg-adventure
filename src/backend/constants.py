@@ -4,9 +4,11 @@ from pathlib import Path
 
 this = Path(__file__)
 
-ROOT = this.parents[1]
+ROOT = this.parents[2]
 
-BACKEND = ROOT / "backend"
+SRC = ROOT / "src"
+
+BACKEND = SRC / "backend"
 
 BACKEND_CONFIG = BACKEND / "llm-backend-config.yaml"
 
