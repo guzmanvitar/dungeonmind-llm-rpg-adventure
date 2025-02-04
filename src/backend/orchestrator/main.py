@@ -9,9 +9,9 @@ import yaml
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.constants import BACKEND_CONFIG
-from backend.orchestrator.models import ChatRequest, ChatResponse
-from backend.orchestrator.services import ModelFactory
+from src.backend.constants import BACKEND_CONFIG
+from src.backend.orchestrator.models import ChatRequest, ChatResponse
+from src.backend.orchestrator.services import ModelFactory
 
 # Initialize FastAPI app
 app = FastAPI(docs_url="/")
