@@ -1,5 +1,4 @@
-""" Defines the data models used in the backend.
-"""
+"""Defines the data models used in the backend."""
 
 from pydantic import BaseModel
 

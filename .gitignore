@@ -175,3 +175,4 @@ cython_debug/
 
 #OTHER
 .DS_Store
+.db
