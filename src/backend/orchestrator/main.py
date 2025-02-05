@@ -12,12 +12,12 @@ from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
-from src.backend.constants import BACKEND_CONFIG
 from src.backend.database.config import SessionLocal
 from src.backend.database.models import Background, Character, CharacterClass, Race
 from src.backend.orchestrator.models import ChatRequest, ChatResponse
 from src.backend.orchestrator.routes.character import router as character_router
 from src.backend.orchestrator.services import LLMService, ModelFactory
+from src.constants import BACKEND_CONFIG
 from src.logger_definition import get_logger
 
 logger = get_logger(__file__)
@@ -189,6 +189,7 @@ def chat(
     metadata = []  # Stores hidden messages that won't be displayed
 
     # Prepend initial prompt
+    # TODO: On current design we need to prepend initial message every time
     if llm_service.initial_prompt:
         if (
             not request.conversation_history

@@ -11,7 +11,7 @@ from abc import ABC, abstractmethod
 import yaml
 from openai import OpenAI
 
-from src.backend.constants import BACKEND_CONFIG, SECRETS
+from src.constants import BACKEND_CONFIG, SECRETS
 
 
 class LLMService(ABC):
