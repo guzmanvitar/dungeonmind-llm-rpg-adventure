@@ -15,7 +15,7 @@ function typeText(element, text, speed = 75) {
             element.innerHTML += text[i];
             element.appendChild(cursor); // Append cursor after each letter
             i++;
-            scrollToBottom(document.getElementById("chat-log")); // ✅ Scroll as text appears
+            scrollToBottom(document.getElementById("chat-log")); // Scroll as text appears
             setTimeout(type, speed);
         } else {
             cursor.remove(); // Remove cursor when typing is finished
@@ -34,18 +34,18 @@ document.addEventListener("DOMContentLoaded", function () {
     messageElement.innerHTML = "<strong>DungeonMind:</strong> ";
     chatLog.appendChild(messageElement);
 
-    const storyText = `Between the realms of thought and reality, I dwell: the DungeonMind, the silent watcher,
-    weaving fate into form.
-
-    I have chronicled a thousand worlds, but now, the quill hovers over an empty page...
-
-    Tell me, traveler, where does your story begin? Speak, and let the tale unfold!`;
+    const storyText = `Between the realms of thought and reality, I dwell: the DungeonMind,
+    the silent watcher, weaving fate into form.
+    A thousand souls have walked this path before you, their fates entwined with destiny.
+    Now the quill hovers over the page once more—who will you become, traveler?
+    A noble warrior, a seeker of knowledge, a trickster in the shadows?
+    Or will you forge a path unlike any before?`;
 
     typeText(messageElement, storyText);
 });
 
 
-let chatHistory = []; // Stores the conversation history
+let chatHistory = []; // Stores conversation history
 
 async function sendMessage() {
     const userInput = document.getElementById("user-input").value;
@@ -53,10 +53,10 @@ async function sendMessage() {
 
     if (!userInput.trim()) return;  // Prevent empty messages
 
-    // Add user message to chat history
+    // ✅ Add user message to chat history
     chatHistory.push({ role: "user", content: userInput });
 
-    // Display user message in chat log
+    // ✅ Display user message in chat log
     chatLog.innerHTML += `<p><strong>You:</strong> ${userInput}</p>`;
     scrollToBottom(chatLog);
 
@@ -66,7 +66,7 @@ async function sendMessage() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 user_message: userInput,
-                conversation_history: chatHistory, // Send full history
+                conversation_history: chatHistory, // ✅ Send full history
             }),
         });
 
@@ -74,15 +74,20 @@ async function sendMessage() {
 
         const data = await response.json();
 
-        // Add assistant's response to chat history
+        // ✅ First, push metadata into history (but don't display)
+        if (data.metadata) {
+            data.metadata.forEach((meta) => chatHistory.push(meta));
+        }
+
+        // ✅ Then, add assistant's response to chat history
         chatHistory.push({ role: "assistant", content: data.assistant_message });
 
-        // Display assistant's response with typing effect
+        // ✅ Only display non-hidden messages
         let messageElement = document.createElement("p");
         messageElement.innerHTML = "<strong>Dungeon Master:</strong> ";
         chatLog.appendChild(messageElement);
 
-        typeText(messageElement, data.assistant_message, 30); // ✅ Now types out text
+        typeText(messageElement, data.assistant_message); // Typing effect
         scrollToBottom(chatLog);
     } catch (error) {
         console.error("Error:", error);
@@ -90,7 +95,7 @@ async function sendMessage() {
         scrollToBottom(chatLog);
     }
 
-    // Clear input field
+    // ✅ Clear input field
     document.getElementById("user-input").value = "";
 }
 

@@ -23,8 +23,14 @@ class LLMService(ABC):
         conversation_history (List[Dict[str, str]]): The conversation context.
     """
 
-    def __init__(self, model: str, conversation_history: list[dict[str, str]] | None = None):
+    def __init__(
+        self,
+        model: str,
+        initial_prompt: str | None,
+        conversation_history: list[dict[str, str]] | None = None,
+    ):
         self._model = model
+        self.initial_prompt = initial_prompt
         if conversation_history:
             self.conversation_history = conversation_history
         else:
@@ -36,9 +42,18 @@ class LLMService(ABC):
         return self._model
 
     @abstractmethod
-    def generate_response(self) -> str:
+    def generate_chat_response(self) -> str:
         """
-        Generates a response from the language model.
+        Generates a response from the language model continuing the chat history.
+
+        Returns:
+            str: The model-generated response.
+        """
+
+    @abstractmethod
+    def generate_one_off_response(self, system_prompt: str, user_input: str) -> str:
+        """
+        Generates a response from the language model without affecting chat continuity.
 
         Returns:
             str: The model-generated response.
@@ -53,9 +68,10 @@ class OpenAIService(LLMService):
     def __init__(
         self,
         model: str = "gpt-4",
+        initial_prompt: str | None = None,
         temperature: float | None = 0.7,
     ):
-        super().__init__(model)
+        super().__init__(model, initial_prompt)
         self.temperature = temperature
 
         try:
@@ -65,14 +81,37 @@ class OpenAIService(LLMService):
         except (FileNotFoundError, KeyError, json.JSONDecodeError) as e:
             raise ValueError(f"Error loading OpenAI credentials: {e}") from e
 
-    def generate_response(self):
+    def generate_chat_response(self):
+        """Generates a response using the current conversation history."""
         messages = self.conversation_history
 
-        response = self.client.chat.completions.create(
-            model=self.model, messages=messages, temperature=self.temperature
+        # Get response from current history
+        response = (
+            self.client.chat.completions.create(
+                model=self.model, messages=messages, temperature=self.temperature
+            )
+            .choices[0]
+            .message.content
         )
 
-        return response.choices[0].message.content
+        return response
+
+    def generate_one_off_response(self, system_prompt: str, user_input: str):
+        """Generates a response without modifying conversation history."""
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_input},
+        ]
+
+        response = (
+            self.client.chat.completions.create(
+                model=self.model, messages=messages, temperature=self.temperature
+            )
+            .choices[0]
+            .message.content
+        )
+
+        return response
 
 
 class SampleService(LLMService):
@@ -80,11 +119,15 @@ class SampleService(LLMService):
     Hello world model service for testing conection with the front end.
     """
 
-    def __init__(self, model: str = "sample"):
-        super().__init__(model)
+    def __init__(self, model: str = "sample", initial_prompt: str | None = None):
+        super().__init__(model, initial_prompt)
 
-    def generate_response(self):
+    def generate_chat_response(self):
+
         return f"(Local AI) You said: {self.conversation_history[-1]['content']}"
+
+    def generate_one_off_response(self, system_prompt: str, user_input: str):
+        return f"(Local AI) System was prompted {system_prompt}, user message was {user_input}"
 
 
 class ModelFactory:
@@ -109,25 +152,19 @@ class ModelFactory:
         Returns:
             LLMService: An instance of the chosen model service.
         """
-        initial_prompt = self.backend_config.get("initial_prompt", None)
-
         if self.llm_backend == "chatgptv1":
             openai_service = OpenAIService(
                 model=self.backend_config["model"],
                 temperature=self.backend_config["temperature"],
+                initial_prompt=self.backend_config.get("initial_prompt", None),
             )
-            if initial_prompt:
-                openai_service.conversation_history.append(
-                    {"role": "system", "content": initial_prompt}
-                )
             return openai_service
 
         elif self.llm_backend == "samplev1":
-            sample_service = SampleService()
-            if initial_prompt:
-                sample_service.conversation_history.append(
-                    {"role": "system", "content": initial_prompt}
-                )
+            sample_service = SampleService(
+                model=self.backend_config["model"],
+                initial_prompt=self.backend_config.get("initial_prompt", None),
+            )
             return sample_service
         else:
             raise ValueError(f"Unsupported backend: {self.llm_backend}")

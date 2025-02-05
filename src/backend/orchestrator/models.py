@@ -14,7 +14,7 @@ class ChatRequest(BaseModel):
     """
 
     user_message: str
-    conversation_history: list[dict[str, str]]
+    conversation_history: list[dict[str, str]] = []
 
 
 class ChatResponse(BaseModel):
@@ -26,3 +26,4 @@ class ChatResponse(BaseModel):
     """
 
     assistant_message: str
+    metadata: list[dict[str, str]] | None = None  # Metadata stores hidden context
