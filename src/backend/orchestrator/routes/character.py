@@ -86,3 +86,28 @@ def create_character(
             },
         },
     }
+
+
+@router.get("/character")
+def get_character(db: Session = Depends(get_db)):
+    """Returns the character sheet details."""
+    character = db.query(Character).first()
+    if not character:
+        raise HTTPException(status_code=404, detail="No character found")
+
+    race = db.query(Race).filter(Race.id == character.race_id).first()
+    char_class = db.query(CharacterClass).filter(CharacterClass.id == character.class_id).first()
+    background = db.query(Background).filter(Background.id == character.background_id).first()
+
+    return {
+        "name": character.name,
+        "race": race.name if race else "Unknown",
+        "class": char_class.name if char_class else "Unknown",
+        "background": background.name if background else "Unknown",
+        "strength": character.strength,
+        "dexterity": character.dexterity,
+        "constitution": character.constitution,
+        "intelligence": character.intelligence,
+        "wisdom": character.wisdom,
+        "charisma": character.charisma,
+    }

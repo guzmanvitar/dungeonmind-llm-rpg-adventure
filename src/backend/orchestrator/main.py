@@ -60,7 +60,9 @@ def get_db():
         db.close()
 
 
-def get_available_options(db: Session):
+def get_available_options(
+    db: Session,
+) -> tuple[list[str], list[str], list[str]]:
     """Fetch all available races, classes, and backgrounds from the database."""
     races = [race.name for race in db.query(Race).all()]
     classes = [char_class.name for char_class in db.query(CharacterClass).all()]
@@ -82,7 +84,9 @@ def parse_character_from_text(llm_service: LLMService, user_message: str, db: Se
     - Class (Choose from: {', '.join(available_classes)})
     - Background (Choose from: {', '.join(available_backgrounds)})
 
-    If the input is unclear, use the default: Human Ranger Urchin.
+    If the input is unclear, use the default: Adventurer Human Ranger Urchin.
+    Try to infer Race Class and Background conceptually based on the input but avoid infering a
+    name if uncertain.
     Respond with only a JSON object like this:
     {{
         "name": "Arthur"

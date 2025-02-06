@@ -1,0 +1,81 @@
+/* Character Sheet Styles */
+@import url('https://fonts.googleapis.com/css2?family=Uncial+Antiqua&display=swap');
+
+/* Apply same font and overall style */
+body {
+    font-family: 'Uncial Antiqua', cursive;
+    background-image: url('/static/images/character-background.png');
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+/* Character Sheet Container */
+.character-container {
+    max-width: 700px;
+    margin: 50px auto;
+    padding: 20px;
+    background: url('/static/images/vertical-scroll.png') no-repeat center;
+    background-size: contain;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh; /* Ensures it takes at least 60% of the viewport height */
+    max-height: 80vh; /* Ensures it doesn’t exceed 80% of the viewport height */
+    overflow-y: auto; /* Enables scrolling if content exceeds max height */
+    padding-top: 11vh; /* Moves all content, including the title, down */
+}
+
+/* Character Info Section */
+#character-info {
+    font-size: 22px;
+    color: black;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+
+#character-info p {
+    margin: 10px 0;
+}
+
+/* Attributes Section */
+h2 {
+    font-size: 26px;
+    margin-top: 10px;
+    color: black;
+}
+
+#char-stats {
+    list-style: none;
+    padding: 0;
+    font-size: 20px;
+    margin-top: 5px;
+    color: black;
+}
+
+#char-stats li {
+    padding: 5px 0;
+}
+
+/* Back Button */
+button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    background-color: #5b3a1a;
+    color: white;
+    border: 2px solid black;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.1s ease, background-color 0.2s ease;
+    font-family: 'Press Start 2P', cursive;
+}
+
+button:hover {
+    background-color: #7a502c;
+    transform: scale(1.1);
+}
