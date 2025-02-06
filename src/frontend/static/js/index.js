@@ -25,33 +25,52 @@ function typeText(element, text, speed = 75) {
     type();
 }
 
-// Type initial message
+let chatHistory = []; // Stores conversation history
+
+// ✅ Load chat history on page load
 document.addEventListener("DOMContentLoaded", function () {
     const chatLog = document.getElementById("chat-log");
+    let storedChatHistory = sessionStorage.getItem("chatHistory");
 
-    // Create a new paragraph for the DungeonMind's introduction
-    let messageElement = document.createElement("p");
-    messageElement.innerHTML = "<strong>DungeonMind:</strong> ";
-    chatLog.appendChild(messageElement);
+    if (!storedChatHistory) {
+        // ✅ No history exists, start with the DungeonMind introduction
+        let storyText = `Between the realms of thought and reality, I dwell: the DungeonMind,
+        the silent watcher, weaving fate into form.
+        A thousand souls have walked this path before you, their fates entwined with destiny.
+        Now the quill hovers over the page once more—who will you become, traveler?
+        A noble warrior, a seeker of knowledge, a trickster in the shadows?
+        Or will you forge a path unlike any before?`;
 
-    const storyText = `Between the realms of thought and reality, I dwell: the DungeonMind,
-    the silent watcher, weaving fate into form.
-    A thousand souls have walked this path before you, their fates entwined with destiny.
-    Now the quill hovers over the page once more—who will you become, traveler?
-    A noble warrior, a seeker of knowledge, a trickster in the shadows?
-    Or will you forge a path unlike any before?`;
+        let messageElement = document.createElement("p");
+        messageElement.innerHTML = "<strong>DungeonMind:</strong> ";
+        chatLog.appendChild(messageElement);
 
-    typeText(messageElement, storyText);
+        typeText(messageElement, storyText);
+
+        // ✅ Store the intro message in history
+        chatHistory.push({ role: "assistant", content: storyText });
+        sessionStorage.setItem("chatHistory", JSON.stringify(chatHistory));
+    } else {
+        // ✅ Load existing chat history and display messages
+        chatHistory = JSON.parse(storedChatHistory);
+        chatHistory.forEach((msg) => {
+            if (msg.role !== "system") {
+                let messageElement = document.createElement("p");
+                messageElement.innerHTML = `<strong>${msg.role === "user" ? "You" : "Dungeon Master"}:</strong> ${msg.content}`;
+                chatLog.appendChild(messageElement);
+            }
+        });
+    }
+
+    scrollToBottom();
 });
 
-
-let chatHistory = []; // Stores conversation history
 
 async function sendMessage() {
     const userInput = document.getElementById("user-input").value;
     const chatLog = document.getElementById("chat-log");
 
-    if (!userInput.trim()) return;  // Prevent empty messages
+    if (!userInput.trim()) return; // Prevent empty messages
 
     // ✅ Add user message to chat history
     chatHistory.push({ role: "user", content: userInput });
@@ -89,6 +108,9 @@ async function sendMessage() {
 
         typeText(messageElement, data.assistant_message); // Typing effect
         scrollToBottom(chatLog);
+
+        // ✅ Save updated history in sessionStorage
+        sessionStorage.setItem("chatHistory", JSON.stringify(chatHistory));
     } catch (error) {
         console.error("Error:", error);
         chatLog.innerHTML += `<p><strong>Error:</strong> Failed to get response.</p>`;
