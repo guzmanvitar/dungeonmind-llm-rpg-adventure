@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Sheet</title>
+    <link rel="stylesheet" href="/static/css/character.css">
+</head>
+<body>
+
+    <div class="character-container">
+        <div id="character-info">
+            <h2>Character Sheet</h2>
+            <p><strong>Name:</strong> <span id="char-name"></span></p>
+            <p><strong>Race:</strong> <span id="char-race"></span></p>
+            <p><strong>Class:</strong> <span id="char-class"></span></p>
+            <p><strong>Background:</strong> <span id="char-background"></span></p>
+        </div>
+
+        <h2>Attributes</h2>
+        <ul id="char-stats"></ul>
+
+        <button onclick="window.location.href='/'">Back to Story</button>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/character.js') }}"></script>
+</body>
+</html>
