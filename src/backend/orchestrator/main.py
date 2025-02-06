@@ -85,8 +85,6 @@ def parse_character_from_text(llm_service: LLMService, user_message: str, db: Se
     - Background (Choose from: {', '.join(available_backgrounds)})
 
     If the input is unclear, use the default: Adventurer Human Ranger Urchin.
-    Try to infer Race Class and Background conceptually based on the input but avoid infering a
-    name if uncertain.
     Respond with only a JSON object like this:
     {{
         "name": "Arthur"
