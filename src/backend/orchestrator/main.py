@@ -85,8 +85,6 @@ def parse_character_from_text(llm_service: LLMService, user_message: str, db: Se
     - Background (Choose from: {', '.join(available_backgrounds)})
 
     If the input is unclear, use the default: Adventurer Human Ranger Urchin.
-    Try to infer Race Class and Background conceptually based on the input but avoid infering a
-    name if uncertain.
     Respond with only a JSON object like this:
     {{
         "name": "Arthur"
@@ -192,18 +190,6 @@ def chat(
     """Handles chat interactions and injects character stats into the LLM context."""
     metadata = []  # Stores hidden messages that won't be displayed
 
-    # Prepend initial prompt
-    # TODO: On current design we need to prepend initial message every time
-    if llm_service.initial_prompt:
-        if (
-            not request.conversation_history
-            or request.conversation_history[0]["content"] != llm_service.initial_prompt
-        ):
-            request.conversation_history.insert(
-                0, {"role": "system", "content": llm_service.initial_prompt}
-            )
-            logger.info("Initial prompt prepended to conversation history")
-
     # Initialize character
     if not db.query(Character).first():
         # TODO: When session management is added, replace this with user-specific character lookup
@@ -234,7 +220,9 @@ def chat(
         return ChatResponse(assistant_message=chat_response, metadata=metadata)
 
     # Initilize llm service with request conversation history
-    llm_service.conversation_history = request.conversation_history
+    llm_service.conversation_history = (
+        llm_service.conversation_history + request.conversation_history
+    )
 
     # Append message to llm chat history and generate next response
     llm_service.conversation_history.append({"role": "user", "content": request.user_message})

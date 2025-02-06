@@ -152,19 +152,29 @@ class ModelFactory:
         Returns:
             LLMService: An instance of the chosen model service.
         """
+        initial_prompt = self.backend_config.get("initial_prompt", None)
+
         if self.llm_backend == "chatgptv1":
             openai_service = OpenAIService(
                 model=self.backend_config["model"],
                 temperature=self.backend_config["temperature"],
-                initial_prompt=self.backend_config.get("initial_prompt", None),
+                initial_prompt=initial_prompt,
             )
+            if initial_prompt:
+                openai_service.conversation_history.append(
+                    {"role": "system", "content": initial_prompt}
+                )
             return openai_service
 
         elif self.llm_backend == "samplev1":
             sample_service = SampleService(
                 model=self.backend_config["model"],
-                initial_prompt=self.backend_config.get("initial_prompt", None),
+                initial_prompt=initial_prompt,
             )
+            if initial_prompt:
+                sample_service.conversation_history.append(
+                    {"role": "system", "content": initial_prompt}
+                )
             return sample_service
         else:
             raise ValueError(f"Unsupported backend: {self.llm_backend}")
