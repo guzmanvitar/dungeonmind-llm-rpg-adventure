@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from src.backend.database.models import Background, Character, CharacterClass, Race
 from src.backend.orchestrator.services import LLMService
 from src.logger_definition import get_logger
+from src.utils import weighted_random_stat
 
 logger = get_logger(__file__)
 
@@ -101,12 +102,12 @@ class CharacterManager:
             race_id=race.id,
             class_id=char_class.id,
             background_id=background.id,
-            strength=10 + race.strength_bonus,
-            dexterity=10 + race.dexterity_bonus,
-            constitution=10 + race.constitution_bonus,
-            intelligence=10 + race.intelligence_bonus,
-            wisdom=10 + race.wisdom_bonus,
-            charisma=10 + race.charisma_bonus,
+            strength=weighted_random_stat() + race.strength_bonus,
+            dexterity=weighted_random_stat() + race.dexterity_bonus,
+            constitution=weighted_random_stat() + race.constitution_bonus,
+            intelligence=weighted_random_stat() + race.intelligence_bonus,
+            wisdom=weighted_random_stat() + race.wisdom_bonus,
+            charisma=weighted_random_stat() + race.charisma_bonus,
         )
         self.db.add(character)
         self.db.commit()

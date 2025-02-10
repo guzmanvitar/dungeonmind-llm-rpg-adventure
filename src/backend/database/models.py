@@ -4,6 +4,8 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.sqlite import JSON
 from sqlalchemy.orm import declarative_base, relationship
 
+from src.utils import weighted_random_stat
+
 Base = declarative_base()
 
 
@@ -77,12 +79,12 @@ class Character(Base):
     class_id = Column(Integer, ForeignKey("classes.id"))
     background_id = Column(Integer, ForeignKey("backgrounds.id"))
 
-    strength = Column(Integer, default=10)
-    dexterity = Column(Integer, default=10)
-    constitution = Column(Integer, default=10)
-    intelligence = Column(Integer, default=10)
-    wisdom = Column(Integer, default=10)
-    charisma = Column(Integer, default=10)
+    strength = Column(Integer, default=weighted_random_stat)
+    dexterity = Column(Integer, default=weighted_random_stat)
+    constitution = Column(Integer, default=weighted_random_stat)
+    intelligence = Column(Integer, default=weighted_random_stat)
+    wisdom = Column(Integer, default=weighted_random_stat)
+    charisma = Column(Integer, default=weighted_random_stat)
 
     race = relationship("Race")
     char_class = relationship("CharacterClass")
