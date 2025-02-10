@@ -30,6 +30,7 @@ def get_character(db: Session = Depends(get_db)):
     if not character:
         raise HTTPException(status_code=404, detail="No character found")
 
+    # Fetch related class, race, and background details
     race = db.query(Race).filter(Race.id == character.race_id).first()
     char_class = db.query(CharacterClass).filter(CharacterClass.id == character.class_id).first()
     background = db.query(Background).filter(Background.id == character.background_id).first()
@@ -39,10 +40,14 @@ def get_character(db: Session = Depends(get_db)):
         "race": race.name if race else "Unknown",
         "class": char_class.name if char_class else "Unknown",
         "background": background.name if background else "Unknown",
+        "current_hit_points": character.current_hit_points,  # Include HP
         "strength": character.strength,
         "dexterity": character.dexterity,
         "constitution": character.constitution,
         "intelligence": character.intelligence,
         "wisdom": character.wisdom,
         "charisma": character.charisma,
+        "saving_throws": (
+            char_class.saving_throws if char_class and char_class.saving_throws else []
+        ),
     }
