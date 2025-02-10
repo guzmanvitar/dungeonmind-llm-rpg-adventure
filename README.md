@@ -1,9 +1,60 @@
-# Dungeonmind LLM RPG Adventure
+# 🏰 DungeonMind - AI-Powered Dungeon Master
 
-## Repo Setup
+DungeonMind is an AI-driven Dungeon Master assistant designed to guide players through dynamic, immersive, and rule-consistent Dungeons & Dragons (D&D) adventures. 
+It leverages Large Language Models (LLMs) for inmersive, interactive, and ever-new story telling, enhancing the models with prompt engineering, RAG, and backend rules to enforce D&D mechanics and story consistency.
 
-1. **uv**
+## 🚀 Features
+ - 🧙 AI Dungeon Master: A virtual storyteller that guides players through the adventure.
+ - 🎲 D&D Rule Enforcement: Ensures consistency in combat, skill checks, and in-world restrictions.
+ - 🔍 Retrieval-Augmented Generation (RAG): Fetches external rulebook details and lore dynamically.
+ - 🔀 Multiple LLM Backends: Supports GPT-4, GPT-3.5, and local models.
+ - 🖥 Frontend Integration: Flask-based UI with a medieval fantasy aesthetic.
+ - 🎛 Configurable Settings: Customize backend models, temperature, and initial prompts.
 
+## 🛠 Tech Stack
+| Component     | Technology                |
+|--------------|--------------------------|
+| **Frontend**  | Flask (HTML, CSS, JavaScript) |
+| **Backend**   | FastAPI (Python)         |
+| **LLM Service** | OpenAI API (GPT-4, GPT-3.5) |
+| **Storage**   | SQLite for game state persistence |
+| **Vector Search** | (Planned) Pinecone/Qdrant for rule retrieval |
+
+
+## 📁 Project Structure
+```
+dungeonmind-llm-rpg-adventure/
+│── backend/
+│   ├── orchestrator/
+│   │   ├── main.py          # FastAPI orchestrator
+│   │   ├── models.py        # API request/response models
+│   │   ├── services.py      # LLM abstraction layer
+│   ├── game_mechanics/
+│   │   ├── character_creation.py # Character creation logic
+│   ├── constants.py         # Configuration paths
+│   ├── config.yaml          # Backend configuration
+│── frontend/
+│   ├── app.py               # Flask frontend server
+│   ├── templates/
+│   │   ├── index.html       # Main chat interface
+│   │   ├── character.html   # Character sheet UI
+│   ├── static/
+│   │   ├── css/             # Stylesheets
+│   │   ├── js/              # Frontend scripts
+│── data/
+│   ├── raw/                 # Fetched D&D API data
+│── .secrets/
+│   ├── open-ai-creds.json   # API credentials (ignored in repo)
+│── README.md                # Project documentation
+```
+
+## 🔧 Setup & Installation
+1️⃣ Clone the Repository
+```bash
+git clone https://github.com/guzmanvitar/dungeonmind-llm-rpg-adventure.git
+cd dungeonmind-llm-rpg-adventure
+```
+2️⃣ Install Dependencies
 This repo uses [uv](https://docs.astral.sh/uv/getting-started/installation) to install and manage dependencies,
 as well as to set up the Python environment. After installing `uv` run
 ```bash
@@ -14,61 +65,60 @@ To set up Git hooks for code quality checks run also
 ```bash
 uv run pre-commit install
 ```
+3️⃣ Configure API Credentials
+Create a `.secrets/open-ai-creds.json` file and add your OpenAI API key:
+```json
+{
+    "key": "your-openai-api-key-here"
+}
+```
+## 🚀 Running the Project
+1️⃣ Start the Backend
+```bash
+uv run uvicorn src.backend.orchestrator.main:app
+```
+2️⃣ Start the Frontend
+```bash
+uv run src/frontend/app.py
+```
+
+## 🔮 Roadmap (Upcoming Features)
+
+✅ **Phase 1: Core AI Dungeon Master**  
+✅ Character creation with race, class, and background  
+✅ Integrated chat interface with persistent history  
+
+🔲 **Phase 2: RAG for Game Mechanics**  
+🔲 Implement ability score retrieval using stored API data  
+🔲 Fetch relevant D&D rule explanations dynamically  
+
+🔲 **Phase 3: Interactive Game Elements**  
+🔲 Add inventory & spell tracking  
+🔲 Support dice roll mechanics using AI-driven adjudication  
+
+🔲 **Phase 4: Multiplayer Co-op Mode**  
+🔲 Allow multiple players to join the same session  
+🔲 Implement NPCs and shared game world state  
 
 
-## Project organization
-```
-dungeonmind-llm-rpg-adventure/
-│
-├── frontend/                  # Streamlit or frontend UI components
-│   ├── __init__.py
-│   ├── app.py                 # Main Streamlit app file
-│   ├── components/            # Reusable UI components
-│   │   ├── chat.py            # Chat interface
-│   │   ├── dice_rolls.py      # Dice roll widget
-│   │   └── stats_display.py   # Character stats and inventory display
-│   └── assets/                # Static files (e.g., icons, images)
-│
-├── backend/                   # Backend logic and APIs
-│   ├── __init__.py
-│   ├── orchestrator/          # Orchestrator logic
-│   │   ├── __init__.py        #
-│   │   ├── main.py            # FastAPI orchestrator file
-│   │   ├── models.py          # Pydantic models
-│   │   └── services.py        # LLM-related service calls
-│   ├── rules_engine.py        # D&D rules validation
-│   ├── game_state_manager.py  # Game state handling
-│   ├── rag_retriever.py       # Retrieval-augmented generation logic
-│   └── models/                # Data models (e.g., for player, NPCs, world)
-│       ├── __init__.py
-│       ├── player.py
-│       ├── npc.py
-│       └── game_state.py
-│
-├── data/                      # Data files and embeddings
-│   ├── raw/                   # Raw data for RAG (e.g., D&D rulebooks)
-│   ├── processed/             # Processed embeddings for vector search
-│   └── saved_games/           # Persistent storage for saved game states
-│
-├── tests/                     # Unit and integration tests
-│   ├── test_frontend.py       # Tests for frontend components
-│   ├── test_backend.py        # Tests for backend modules
-│   └── test_end_to_end.py     # Full workflow tests
-│
-├── notebooks/                 # Jupyter notebooks for prototyping
-│   └── rag_experiments.ipynb  # Example: testing RAG setup
-│
-├── docker/                    # Docker configuration
-│   ├── Dockerfile             # Dockerfile for containerizing the app
-│   ├── docker-compose.yml     # For local multi-container setup (if needed)
-│
-├── scripts/                   # Utility scripts
-│   ├── initialize_db.py       # Script to set up database
-│   ├── generate_embeddings.py # Script to process rulebooks into embeddings
-│   └── start_server.sh        # Shortcut to start the app
-│
-├── .env.example               # Example environment variables file
-├── requirements.txt           # Python dependencies (or use `pyproject.toml`)
-├── README.md                  # Project overview and setup instructions
-└── LICENSE                    # License file
-```
+## 🏰 Contributing
+Contributions are welcome! Please follow these steps:
+
+1. Fork the Repo
+2. Create a Branch (feature/new-mechanic)
+3. Commit Your Changes
+4. Open a Pull Request
+Make sure to follow our code formatting (Black, Flake8) and pre-commit hooks.
+
+## 📜 License
+DungeonMind is open-source under the MIT License.
+
+Happy adventuring! 🎲✨
+
+
+
+
+
+
+
+
