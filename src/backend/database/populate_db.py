@@ -32,12 +32,14 @@ races = [
         description="Stout and resilient.",
         constitution_bonus=2,
         abilities=["Darkvision", "Dwarven Resilience", "Stonecunning"],
+        speed=25,
     ),
     Race(
         name="Halfling",
         description="Small and nimble.",
         dexterity_bonus=2,
         abilities=["Lucky", "Brave", "Halfling Nimbleness"],
+        speed=25,
     ),
     Race(
         name="Dragonborn",
@@ -51,6 +53,7 @@ races = [
         description="Curious and inventive.",
         intelligence_bonus=2,
         abilities=["Darkvision", "Gnome Cunning"],
+        speed=25,
     ),
     Race(
         name="Half-Elf",

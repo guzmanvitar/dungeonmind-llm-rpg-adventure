@@ -24,6 +24,7 @@ class Race(Base):
     intelligence_bonus = Column(Integer, default=0)
     wisdom_bonus = Column(Integer, default=0)
     charisma_bonus = Column(Integer, default=0)
+    speed = Column(Integer, default=30)
     abilities = Column(JSON)  # List of racial abilities (e.g., ["Darkvision", "Fey Ancestry"])
 
     def __repr__(self):
