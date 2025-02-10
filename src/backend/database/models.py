@@ -81,6 +81,8 @@ class Character(Base):
     class_id = Column(Integer, ForeignKey("classes.id"))
     background_id = Column(Integer, ForeignKey("backgrounds.id"))
 
+    current_hit_points = Column(Integer)
+
     strength = Column(Integer, default=weighted_random_stat)
     dexterity = Column(Integer, default=weighted_random_stat)
     constitution = Column(Integer, default=weighted_random_stat)

@@ -96,6 +96,13 @@ class CharacterManager:
                 status_code=400, detail="Invalid race, class, or background parsed by LLM."
             )
 
+        # Calculate initial HP: Hit Die + Constitution modifier
+        constitution_modifier = (10 + race.constitution_bonus - 10) // 2
+        initial_hp = char_class.hit_die + constitution_modifier
+
+        # Ensure HP is at least 1
+        initial_hp = max(initial_hp, 1)
+
         # Create and save the new character
         character = Character(
             name=character_name,
@@ -108,6 +115,7 @@ class CharacterManager:
             intelligence=weighted_random_stat() + race.intelligence_bonus,
             wisdom=weighted_random_stat() + race.wisdom_bonus,
             charisma=weighted_random_stat() + race.charisma_bonus,
+            current_hit_points=initial_hp,
         )
         self.db.add(character)
         self.db.commit()
@@ -117,6 +125,9 @@ class CharacterManager:
 
     def get_character_summary(self, character, race, char_class, background):
         """Generates a structured character summary for the LLM context."""
+
+        saving_throws = ", ".join(char_class.saving_throws) if char_class.saving_throws else "None"
+
         return f"""
         Character: {character.name}
         Race: {race.name if race else 'Unknown'}
@@ -130,6 +141,10 @@ class CharacterManager:
         - Intelligence: {character.intelligence}
         - Wisdom: {character.wisdom}
         - Charisma: {character.charisma}
+
+        **Current HP:** {character.current_hit_points}
+
+        Saving Throws: {saving_throws}
 
         Key Traits:
         {', '.join(race.abilities) if race and race.abilities else "No racial traits."}
