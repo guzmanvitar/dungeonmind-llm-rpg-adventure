@@ -41,9 +41,10 @@ class CharacterClass(Base):
     name = Column(String, unique=True, nullable=False)
     description = Column(Text)
     hit_die = Column(Integer)
-    primary_ability = Column(String)  # E.g., "Strength" for Barbarian
-    proficiencies = Column(JSON)  # List of skills/weapons/spells
+    primary_ability = Column(String)
+    proficiencies = Column(JSON)  # List of skills/weapons
     spellcasting = Column(Boolean, default=False)
+    saving_throws = Column(JSON, nullable=False)  # List of saving throw proficiencies
 
     def __repr__(self):
         return f"<Class(name={self.name})>"
