@@ -5,7 +5,12 @@ import json
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from src.backend.database.models import Background, Character, CharacterClass, Race
+from src.backend.database.models import (
+    Background,
+    Character,
+    CharacterClass,
+    Race,
+)
 from src.backend.orchestrator.services import LLMService
 from src.logger_definition import get_logger
 from src.utils import weighted_random_stat
@@ -126,13 +131,38 @@ class CharacterManager:
     def get_character_summary(self, character, race, char_class, background):
         """Generates a structured character summary for the LLM context."""
 
+        # Fetch traits from race
+        traits_list = (
+            ", ".join([trait.name for trait in race.traits]) if race.traits else "No racial traits"
+        )
+
+        # Fetch saving throws from class
         saving_throws = ", ".join(char_class.saving_throws) if char_class.saving_throws else "None"
+
+        # Fetch proficiencies from class and background
+        class_proficiencies = (
+            [prof.name for prof in char_class.proficiencies] if char_class.proficiencies else []
+        )
+        background_proficiencies = (
+            [prof.name for prof in background.starting_proficiencies]
+            if background.starting_proficiencies
+            else []
+        )
+
+        # Combine class and background proficiencies, removing duplicates
+        all_proficiencies = sorted(set(class_proficiencies + background_proficiencies))
+        proficiencies_list = ", ".join(all_proficiencies) if all_proficiencies else "None"
 
         return f"""
         Character: {character.name}
         Race: {race.name if race else 'Unknown'}
         Class: {char_class.name if char_class else 'Unknown'}
         Background: {background.name if background else 'Unknown'}
+
+        **Current HP:** {character.current_hit_points}
+
+        Key Traits:
+        {traits_list}
 
         Stats:
         - Strength: {character.strength}
@@ -142,10 +172,9 @@ class CharacterManager:
         - Wisdom: {character.wisdom}
         - Charisma: {character.charisma}
 
-        **Current HP:** {character.current_hit_points}
+        Saving Throws:
+        {saving_throws}
 
-        Saving Throws: {saving_throws}
-
-        Key Traits:
-        {', '.join(race.abilities) if race and race.abilities else "No racial traits."}
-        """
+        Proficiencies:
+        {proficiencies_list}
+    """
