@@ -35,19 +35,40 @@ def get_character(db: Session = Depends(get_db)):
     char_class = db.query(CharacterClass).filter(CharacterClass.id == character.class_id).first()
     background = db.query(Background).filter(Background.id == character.background_id).first()
 
+    # Fetch racial traits
+    traits = [trait.name for trait in race.traits] if race and race.traits else []
+
+    # Fetch saving throws
+    saving_throws = char_class.saving_throws if char_class and char_class.saving_throws else []
+
+    # Fetch proficiencies from class and background
+    class_proficiencies = (
+        [prof.name for prof in char_class.proficiencies]
+        if char_class and char_class.proficiencies
+        else []
+    )
+    background_proficiencies = (
+        [prof.name for prof in background.starting_proficiencies]
+        if background and background.starting_proficiencies
+        else []
+    )
+
+    # Combine all proficiencies, removing duplicates
+    all_proficiencies = sorted(set(class_proficiencies + background_proficiencies))
+
     return {
         "name": character.name,
         "race": race.name if race else "Unknown",
         "class": char_class.name if char_class else "Unknown",
         "background": background.name if background else "Unknown",
-        "current_hit_points": character.current_hit_points,  # Include HP
+        "current_hit_points": character.current_hit_points,
+        "traits": traits,
         "strength": character.strength,
         "dexterity": character.dexterity,
         "constitution": character.constitution,
         "intelligence": character.intelligence,
         "wisdom": character.wisdom,
         "charisma": character.charisma,
-        "saving_throws": (
-            char_class.saving_throws if char_class and char_class.saving_throws else []
-        ),
+        "saving_throws": saving_throws,
+        "proficiencies": all_proficiencies,
     }
