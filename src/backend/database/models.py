@@ -1,12 +1,65 @@
 """Defines models for game database."""
 
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table, Text
 from sqlalchemy.dialects.sqlite import JSON
 from sqlalchemy.orm import declarative_base, relationship
 
 from src.utils import weighted_random_stat
 
 Base = declarative_base()
+
+
+# Proficiencies table
+class Proficiency(Base):
+    """Defines proficiencies including skills, tools, weapons, and languages."""
+
+    __tablename__ = "proficiencies"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String, unique=True, nullable=False)
+    category = Column(String, nullable=False)  # Skill, Tool, Weapon, Language
+    description = Column(Text)  # Brief description of the proficiency
+
+    def __repr__(self):
+        return f"<Proficiency(name={self.name}, category={self.category})>"
+
+
+# Traits table
+class Trait(Base):
+    """Defines character traits that races and subraces can have."""
+
+    __tablename__ = "traits"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    index = Column(String, unique=True, nullable=False)  # API index
+    name = Column(String, unique=True, nullable=False)  # Trait name
+    description = Column(Text)  # Trait description
+    proficiencies = Column(JSON, nullable=True)  # List of proficiencies gained
+
+
+# Junction table for class-profiency relationship
+ClassProficiencies = Table(
+    "class_proficiencies",
+    Base.metadata,
+    Column("class_id", Integer, ForeignKey("classes.id"), primary_key=True),
+    Column("proficiency_id", Integer, ForeignKey("proficiencies.id"), primary_key=True),
+)
+
+# Junction table for background-profiency relationship
+BackgroundProficiencies = Table(
+    "background_proficiencies",
+    Base.metadata,
+    Column("background_id", Integer, ForeignKey("backgrounds.id"), primary_key=True),
+    Column("proficiency_id", Integer, ForeignKey("proficiencies.id"), primary_key=True),
+)
+
+# Junction table for race-trait relationship
+RaceTrait = Table(
+    "race_traits",
+    Base.metadata,
+    Column("race_id", Integer, ForeignKey("races.id"), primary_key=True),
+    Column("trait_id", Integer, ForeignKey("traits.id"), primary_key=True),
+)
 
 
 # Races Table
@@ -25,7 +78,7 @@ class Race(Base):
     wisdom_bonus = Column(Integer, default=0)
     charisma_bonus = Column(Integer, default=0)
     speed = Column(Integer, default=30)
-    abilities = Column(JSON)  # List of racial abilities (e.g., ["Darkvision", "Fey Ancestry"])
+    traits = relationship("Trait", secondary=RaceTrait, backref="races")
 
     def __repr__(self):
         return f"<Race(name={self.name})>"
@@ -42,7 +95,7 @@ class CharacterClass(Base):
     description = Column(Text)
     hit_die = Column(Integer)
     primary_ability = Column(String)
-    proficiencies = Column(JSON)  # List of skills/weapons
+    proficiencies = relationship("Proficiency", secondary=ClassProficiencies, backref="classes")
     spellcasting = Column(Boolean, default=False)
     saving_throws = Column(JSON, nullable=False)  # List of saving throw proficiencies
 
@@ -59,7 +112,9 @@ class Background(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, unique=True, nullable=False)
     description = Column(Text)
-    starting_proficiencies = Column(JSON)  # List of proficiencies gained
+    starting_proficiencies = relationship(
+        "Proficiency", secondary=BackgroundProficiencies, backref="backgrounds"
+    )
     starting_equipment = Column(JSON)  # List of starting equipment
 
     def __repr__(self):
