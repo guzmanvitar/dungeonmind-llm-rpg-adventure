@@ -1,12 +1,25 @@
 """Defines models for game database."""
 
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table, Text
+from sqlalchemy import Boolean, Column, Float, ForeignKey, Integer, String, Table, Text
 from sqlalchemy.dialects.sqlite import JSON
 from sqlalchemy.orm import declarative_base, relationship
 
 from src.utils import weighted_random_stat
 
 Base = declarative_base()
+
+
+# Traits table
+class Trait(Base):
+    """Defines character traits that races can have."""
+
+    __tablename__ = "traits"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    index = Column(String, unique=True, nullable=False)
+    name = Column(String, unique=True, nullable=False)
+    description = Column(Text)
+    proficiencies = Column(JSON, nullable=True)
 
 
 # Proficiencies table
@@ -18,26 +31,46 @@ class Proficiency(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, unique=True, nullable=False)
     category = Column(String, nullable=False)  # Skill, Tool, Weapon, Language
-    description = Column(Text)  # Brief description of the proficiency
+    description = Column(Text)
 
     def __repr__(self):
         return f"<Proficiency(name={self.name}, category={self.category})>"
 
 
-# Traits table
-class Trait(Base):
-    """Defines character traits that races and subraces can have."""
+class Equipment(Base):
+    """Defines equipment items available in D&D 5e."""
 
-    __tablename__ = "traits"
+    __tablename__ = "equipment"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    index = Column(String, unique=True, nullable=False)  # API index
-    name = Column(String, unique=True, nullable=False)  # Trait name
-    description = Column(Text)  # Trait description
-    proficiencies = Column(JSON, nullable=True)  # List of proficiencies gained
+    name = Column(String, unique=True, nullable=False)
+    category = Column(String, nullable=False)  # e.g., "Weapon", "Armor", "Adventuring Gear"
+    cost = Column(Float, nullable=False)  # Cost in gold pieces
+    weight = Column(Float, nullable=True)  # Weight in pounds
+    description = Column(Text, nullable=True)
+
+    # Weapon-specific attributes
+    damage = Column(String, nullable=True)  # E.g., "1d8 slashing"
+    properties = Column(JSON, nullable=True)  # E.g., ["Light", "Finesse"]
+
+    # Armor-specific attributes
+    armor_class = Column(Integer, nullable=True)
+    stealth_disadvantage = Column(Boolean, default=False)
+    strength_requirement = Column(Integer, nullable=True)
+
+    def __repr__(self):
+        return f"<Equipment(name={self.name}, category={self.category})>"
 
 
-# Junction table for class-profiency relationship
+# Junction tables for race/class/background to trait/proficinecies/equipment mappings
+RaceTrait = Table(
+    "race_traits",
+    Base.metadata,
+    Column("race_id", Integer, ForeignKey("races.id"), primary_key=True),
+    Column("trait_id", Integer, ForeignKey("traits.id"), primary_key=True),
+)
+
+
 ClassProficiencies = Table(
     "class_proficiencies",
     Base.metadata,
@@ -45,7 +78,6 @@ ClassProficiencies = Table(
     Column("proficiency_id", Integer, ForeignKey("proficiencies.id"), primary_key=True),
 )
 
-# Junction table for background-profiency relationship
 BackgroundProficiencies = Table(
     "background_proficiencies",
     Base.metadata,
@@ -53,12 +85,26 @@ BackgroundProficiencies = Table(
     Column("proficiency_id", Integer, ForeignKey("proficiencies.id"), primary_key=True),
 )
 
-# Junction table for race-trait relationship
-RaceTrait = Table(
-    "race_traits",
+BackgroundEquipment = Table(
+    "background_equipment",
     Base.metadata,
-    Column("race_id", Integer, ForeignKey("races.id"), primary_key=True),
-    Column("trait_id", Integer, ForeignKey("traits.id"), primary_key=True),
+    Column("background_id", Integer, ForeignKey("backgrounds.id"), primary_key=True),
+    Column("equipment_id", Integer, ForeignKey("equipment.id"), primary_key=True),
+)
+
+ClassEquipment = Table(
+    "class_equipment",
+    Base.metadata,
+    Column("class_id", Integer, ForeignKey("classes.id"), primary_key=True),
+    Column("equipment_id", Integer, ForeignKey("equipment.id"), primary_key=True),
+)
+
+# Junction table for mapping Character to current inventoty
+CharacterInventory = Table(
+    "character_inventory",
+    Base.metadata,
+    Column("character_id", Integer, ForeignKey("characters.id"), primary_key=True),
+    Column("equipment_id", Integer, ForeignKey("equipment.id"), primary_key=True),
 )
 
 
@@ -97,7 +143,12 @@ class CharacterClass(Base):
     primary_ability = Column(String)
     proficiencies = relationship("Proficiency", secondary=ClassProficiencies, backref="classes")
     spellcasting = Column(Boolean, default=False)
-    saving_throws = Column(JSON, nullable=False)  # List of saving throw proficiencies
+    saving_throws = Column(JSON, nullable=False)
+    starting_equipment = relationship(
+        "Equipment",
+        secondary=ClassEquipment,
+        backref="classes",
+    )
 
     def __repr__(self):
         return f"<Class(name={self.name})>"
@@ -112,10 +163,15 @@ class Background(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, unique=True, nullable=False)
     description = Column(Text)
+    starting_gold = Column(Float)
     starting_proficiencies = relationship(
         "Proficiency", secondary=BackgroundProficiencies, backref="backgrounds"
     )
-    starting_equipment = Column(JSON)  # List of starting equipment
+    starting_equipment = relationship(
+        "Equipment",
+        secondary=BackgroundEquipment,
+        backref="backgrounds",
+    )
 
     def __repr__(self):
         return f"<Background(name={self.name})>"
@@ -137,6 +193,7 @@ class Character(Base):
     background_id = Column(Integer, ForeignKey("backgrounds.id"))
 
     current_hit_points = Column(Integer)
+    gold = Column(Float, default=0.0)
 
     strength = Column(Integer, default=weighted_random_stat)
     dexterity = Column(Integer, default=weighted_random_stat)
@@ -148,6 +205,12 @@ class Character(Base):
     race = relationship("Race")
     char_class = relationship("CharacterClass")
     background = relationship("Background")
+
+    inventory = relationship(
+        "Equipment",
+        secondary=CharacterInventory,
+        backref="characters",
+    )
 
     def __repr__(self):
         return f"<Character(name={self.name}, class={self.char_class.name}, race={self.race.name})>"
