@@ -1579,7 +1579,7 @@ starting_equipment_mapping = {
     "Bard": ["Rapier", "Leather Armor", "Lute"],
     "Cleric": ["Mace", "Scale Mail", "Shield"],
     "Druid": ["Quarterstaff", "Leather Armor", "Druidic Focus"],
-    "Fighter": ["Longsword", "Chain Mail", "Shield", "Light Crossbow"],
+    "Fighter": ["Longsword", "Handaxe", "Chain Mail", "Shield", "Light Crossbow"],
     "Monk": ["Shortsword", "Dart"],
     "Paladin": ["Greatsword", "Chain Mail", "Shield"],
     "Ranger": ["Longbow", "Leather Armor", "Shortsword"],

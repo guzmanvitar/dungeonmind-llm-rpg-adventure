@@ -56,12 +56,16 @@ def get_character(db: Session = Depends(get_db)):
     # Combine all proficiencies, removing duplicates
     all_proficiencies = sorted(set(class_proficiencies + background_proficiencies))
 
+    # Fetch inventory items
+    inventory_list = [item.name for item in character.inventory] if character.inventory else []
+
     return {
         "name": character.name,
         "race": race.name if race else "Unknown",
         "class": char_class.name if char_class else "Unknown",
         "background": background.name if background else "Unknown",
         "current_hit_points": character.current_hit_points,
+        "gold": character.gold,
         "traits": traits,
         "strength": character.strength,
         "dexterity": character.dexterity,
@@ -71,4 +75,5 @@ def get_character(db: Session = Depends(get_db)):
         "charisma": character.charisma,
         "saving_throws": saving_throws,
         "proficiencies": all_proficiencies,
+        "inventory": inventory_list,
     }
