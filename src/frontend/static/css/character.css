@@ -1,4 +1,5 @@
 /* Character Sheet Styles */
+/* Character Sheet Styles */
 @import url('https://fonts.googleapis.com/css2?family=Uncial+Antiqua&display=swap');
 
 /* Apply same font and overall style */
@@ -23,37 +24,39 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 75vh; /* Fixed height */
-    position: relative; /* Needed for absolute positioning of text area */
+    height: 75vh;
+    position: relative;
 }
 
+/* Content inside the scroll */
 .character-content {
-    width: 90%; /* Keeps text within the parchment */
-    max-height: 55vh; /* Restricts height before reaching the fold */
-    overflow-y: auto; /* Enables scrolling inside */
-    padding-bottom: 2vh; /* Ensures space before the bottom fold */
+    width: 90%;
+    max-height: 55vh;
+    overflow-y: auto;
+    padding-bottom: 2vh;
 }
 
-/* Character Info Section */
+/* Character Info */
 #character-info {
     font-size: 22px;
     color: black;
     text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
-    padding-bottom: 2vh; /* Ensures space before the bottom fold */
+    padding-bottom: 2vh;
 }
 
 #character-info p {
     margin: 10px 0;
 }
 
-/* Attributes Section */
+/* Section Headers */
 h2 {
     font-size: 26px;
     margin-top: 10px;
     color: black;
 }
 
-#char-stats {
+/* Lists Formatting */
+ul {
     list-style: none;
     padding: 0;
     font-size: 20px;
@@ -61,30 +64,16 @@ h2 {
     color: black;
 }
 
-#char-stats li {
+ul li {
     padding: 5px 0;
 }
-
-#char-saving-throws {
-    list-style: none;
-    padding: 0;
-    font-size: 20px;
-    margin-top: 5px;
-    color: black;
-}
-
-#char-saving-throws li {
-    padding: 5px 0;
-}
-
 
 /* Back Button */
-/* Ensure button stays close to the parchment */
 .button-container {
     display: flex;
     justify-content: center;
-    margin-top: -60px; /* Pulls the button closer to the parchment */
-    padding-bottom: 10px; /* Adjust padding for spacing */
+    margin-top: -60px;
+    padding-bottom: 10px;
 }
 
 button {
