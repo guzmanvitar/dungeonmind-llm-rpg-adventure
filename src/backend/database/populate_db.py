@@ -235,7 +235,7 @@ for race in races:
 session.add_all(races)
 session.commit()
 
-print("✅ Traits and Races successfully populated with correct mappings!")
+print("✅ Races successfully populated along with their Trait mappings!")
 
 
 # List of proficiencies categorized by type

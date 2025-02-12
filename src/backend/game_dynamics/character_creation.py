@@ -9,6 +9,7 @@ from src.backend.database.models import (
     Background,
     Character,
     CharacterClass,
+    Equipment,
     Race,
 )
 from src.backend.orchestrator.services import LLMService
@@ -108,6 +109,28 @@ class CharacterManager:
         # Ensure HP is at least 1
         initial_hp = max(initial_hp, 1)
 
+        # Set starting gold based on background
+        starting_gold = background.starting_gold if background.starting_gold else 0.0
+
+        # Get starting inventory from class and background (Querying Equipment objects)
+        class_equipment = (
+            self.db.query(Equipment)
+            .filter(Equipment.id.in_([item.id for item in char_class.starting_equipment]))
+            .all()
+            if char_class.starting_equipment
+            else []
+        )
+        background_equipment = (
+            self.db.query(Equipment)
+            .filter(Equipment.id.in_([item.id for item in background.starting_equipment]))
+            .all()
+            if background.starting_equipment
+            else []
+        )
+
+        # Combine inventory (remove duplicates by converting to a set and back to a list)
+        starting_inventory = list(set(class_equipment + background_equipment))
+
         # Create and save the new character
         character = Character(
             name=character_name,
@@ -121,7 +144,10 @@ class CharacterManager:
             wisdom=weighted_random_stat() + race.wisdom_bonus,
             charisma=weighted_random_stat() + race.charisma_bonus,
             current_hit_points=initial_hp,
+            gold=starting_gold,
+            inventory=starting_inventory,  # ✅ Now assigning Equipment objects, not IDs
         )
+
         self.db.add(character)
         self.db.commit()
         self.db.refresh(character)
@@ -153,6 +179,13 @@ class CharacterManager:
         all_proficiencies = sorted(set(class_proficiencies + background_proficiencies))
         proficiencies_list = ", ".join(all_proficiencies) if all_proficiencies else "None"
 
+        # ✅ Extract inventory items directly, no extra DB query needed
+        inventory_list = (
+            ", ".join([item.name for item in character.inventory])
+            if character.inventory
+            else "None"
+        )
+
         return f"""
         Character: {character.name}
         Race: {race.name if race else 'Unknown'}
@@ -160,6 +193,7 @@ class CharacterManager:
         Background: {background.name if background else 'Unknown'}
 
         **Current HP:** {character.current_hit_points}
+        **Gold:** {character.gold} GP
 
         Key Traits:
         {traits_list}
@@ -177,4 +211,7 @@ class CharacterManager:
 
         Proficiencies:
         {proficiencies_list}
-    """
+
+        Inventory:
+        {inventory_list}
+        """
