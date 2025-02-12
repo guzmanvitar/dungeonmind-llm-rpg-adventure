@@ -1,4 +1,5 @@
 /* Character Sheet Styles */
+/* Character Sheet Styles */
 @import url('https://fonts.googleapis.com/css2?family=Uncial+Antiqua&display=swap');
 
 /* Apply same font and overall style */
@@ -14,7 +15,7 @@ body {
 /* Character Sheet Container */
 .character-container {
     max-width: 700px;
-    margin: 50px auto;
+    margin: 75px auto;
     padding: 20px;
     background: url('/static/images/vertical-scroll.png') no-repeat center;
     background-size: contain;
@@ -23,32 +24,39 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 60vh; /* Ensures it takes at least 60% of the viewport height */
-    max-height: 80vh; /* Ensures it doesn’t exceed 80% of the viewport height */
-    overflow-y: auto; /* Enables scrolling if content exceeds max height */
-    padding-top: 11vh; /* Moves all content, including the title, down */
+    height: 75vh;
+    position: relative;
 }
 
-/* Character Info Section */
+/* Content inside the scroll */
+.character-content {
+    width: 90%;
+    max-height: 55vh;
+    overflow-y: auto;
+    padding-bottom: 2vh;
+}
+
+/* Character Info */
 #character-info {
     font-size: 22px;
     color: black;
     text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+    padding-bottom: 2vh;
 }
-
 
 #character-info p {
     margin: 10px 0;
 }
 
-/* Attributes Section */
+/* Section Headers */
 h2 {
     font-size: 26px;
     margin-top: 10px;
     color: black;
 }
 
-#char-stats {
+/* Lists Formatting */
+ul {
     list-style: none;
     padding: 0;
     font-size: 20px;
@@ -56,13 +64,20 @@ h2 {
     color: black;
 }
 
-#char-stats li {
+ul li {
     padding: 5px 0;
 }
 
 /* Back Button */
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: -60px;
+    padding-bottom: 10px;
+}
+
 button {
-    margin-top: 20px;
+    margin-top: 0px;
     padding: 10px 20px;
     font-size: 18px;
     font-weight: bold;
