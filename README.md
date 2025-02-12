@@ -99,7 +99,7 @@ Additionally, the system calculates:
 - **Armor Class (AC):** Determined by starting armor and Dexterity modifier.
 - **Gold & Inventory:** The starting equipment is automatically assigned based on class and background. Any missing items are fetched from the equipment database.
 
-### 📊 Database Table Diagram
+### 📊 Database ER Diagram
 ![DatabaseDiagram](https://github.com/user-attachments/assets/d0a12974-c676-4585-af2e-4a49c38db871)
 
 ## 🔮 Roadmap (Upcoming Features)
