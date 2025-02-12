@@ -11,7 +11,7 @@ router = APIRouter()
 # Default character settings
 DEFAULT_RACE = "Human"
 DEFAULT_CLASS = "Ranger"
-DEFAULT_BACKGROUND = "Urchin"
+DEFAULT_BACKGROUND = "Folk Hero"
 
 
 def get_db():
@@ -65,6 +65,7 @@ def get_character(db: Session = Depends(get_db)):
         "class": char_class.name if char_class else "Unknown",
         "background": background.name if background else "Unknown",
         "current_hit_points": character.current_hit_points,
+        "armor_class": character.armor_class,
         "gold": character.gold,
         "traits": traits,
         "strength": character.strength,

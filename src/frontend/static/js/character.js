@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         document.getElementById("char-class").textContent = data.class;
         document.getElementById("char-background").textContent = data.background;
         document.getElementById("char-hp").textContent = data.current_hit_points;
+        document.getElementById("char-ac").textContent = data.armor_class;
         document.getElementById("char-gold").textContent = data.gold.toFixed(2);
 
         // Populate Traits

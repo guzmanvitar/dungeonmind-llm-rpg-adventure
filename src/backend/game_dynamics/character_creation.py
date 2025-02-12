@@ -103,7 +103,8 @@ class CharacterManager:
             )
 
         # Calculate initial HP: Hit Die + Constitution modifier
-        constitution_modifier = (10 + race.constitution_bonus - 10) // 2
+        constitution_score = weighted_random_stat() + race.constitution_bonus
+        constitution_modifier = (constitution_score - 10) // 2
         initial_hp = char_class.hit_die + constitution_modifier
 
         # Ensure HP is at least 1
@@ -131,21 +132,60 @@ class CharacterManager:
         # Combine inventory (remove duplicates by converting to a set and back to a list)
         starting_inventory = list(set(class_equipment + background_equipment))
 
+        # Calculate Dexterity and Wisdom Modifiers
+        dexterity_score = weighted_random_stat() + race.dexterity_bonus
+        dexterity_modifier = (dexterity_score - 10) // 2
+
+        wisdom_score = weighted_random_stat() + race.wisdom_bonus
+        wisdom_modifier = (wisdom_score - 10) // 2
+
+        # Determine Armor Class (AC)
+        armor_items = [item for item in starting_inventory if item.category == "Armor"]
+        shield_equipped = any(item.name == "Shield" for item in starting_inventory)
+
+        if armor_items:
+            # If wearing armor, use its base AC + Dexterity (if applicable)
+            worn_armor = max(armor_items, key=lambda x: x.armor_class)  # Pick the highest AC armor
+            armor_ac = worn_armor.armor_class
+
+            # Apply Dexterity modifier if armor allows it
+            if worn_armor.category == "Light Armor":
+                armor_ac += dexterity_modifier
+            elif worn_armor.category == "Medium Armor":
+                armor_ac += min(dexterity_modifier, 2)  # Medium Armor limits Dex to +2
+
+        elif char_class.name == "Barbarian":
+            # Barbarian Unarmored Defense: 10 + Dex Mod + Con Mod
+            armor_ac = 10 + dexterity_modifier + constitution_modifier
+
+        elif char_class.name == "Monk":
+            # Monk Unarmored Defense: 10 + Dex Mod + Wis Mod
+            armor_ac = 10 + dexterity_modifier + wisdom_modifier
+
+        else:
+            # Default AC for unarmored characters
+            armor_ac = 10 + dexterity_modifier
+
+        # Add +2 AC if character has a shield
+        if shield_equipped:
+            armor_ac += 2
+
         # Create and save the new character
         character = Character(
             name=character_name,
             race_id=race.id,
             class_id=char_class.id,
             background_id=background.id,
-            strength=weighted_random_stat() + race.strength_bonus,
-            dexterity=weighted_random_stat() + race.dexterity_bonus,
-            constitution=weighted_random_stat() + race.constitution_bonus,
-            intelligence=weighted_random_stat() + race.intelligence_bonus,
-            wisdom=weighted_random_stat() + race.wisdom_bonus,
-            charisma=weighted_random_stat() + race.charisma_bonus,
             current_hit_points=initial_hp,
+            armor_class=armor_ac,
             gold=starting_gold,
-            inventory=starting_inventory,  # ✅ Now assigning Equipment objects, not IDs
+            strength=weighted_random_stat() + race.strength_bonus,
+            dexterity=dexterity_score,
+            constitution=constitution_score,
+            intelligence=weighted_random_stat() + race.intelligence_bonus,
+            wisdom=wisdom_score,
+            charisma=weighted_random_stat() + race.charisma_bonus,
+            inventory=starting_inventory,
         )
 
         self.db.add(character)
@@ -179,7 +219,7 @@ class CharacterManager:
         all_proficiencies = sorted(set(class_proficiencies + background_proficiencies))
         proficiencies_list = ", ".join(all_proficiencies) if all_proficiencies else "None"
 
-        # ✅ Extract inventory items directly, no extra DB query needed
+        # Extract inventory items
         inventory_list = (
             ", ".join([item.name for item in character.inventory])
             if character.inventory
@@ -193,6 +233,7 @@ class CharacterManager:
         Background: {background.name if background else 'Unknown'}
 
         **Current HP:** {character.current_hit_points}
+        **Armor Class (AC):** {character.armor_class}
         **Gold:** {character.gold} GP
 
         Key Traits:

@@ -193,6 +193,7 @@ class Character(Base):
     background_id = Column(Integer, ForeignKey("backgrounds.id"))
 
     current_hit_points = Column(Integer)
+    armor_class = Column(Integer)
     gold = Column(Float, default=0.0)
 
     strength = Column(Integer, default=weighted_random_stat)
