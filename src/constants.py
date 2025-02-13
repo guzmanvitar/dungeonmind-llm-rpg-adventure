@@ -12,7 +12,7 @@ SRC = ROOT / "src"
 
 BACKEND = SRC / "backend"
 
-BACKEND_CONFIG = BACKEND / "llm-backend-config.yaml"
+BACKEND_CONFIG = BACKEND / "llm-services-config.yaml"
 
 SECRETS = ROOT / ".secrets"
 

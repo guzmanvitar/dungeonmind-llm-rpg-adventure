@@ -20,7 +20,8 @@ class LLMService(ABC):
 
     Args:
         model (str): Model version used for response generation.
-        conversation_history (List[Dict[str, str]]): The conversation context.
+        initial_prompt (str): Initial instructions for the service.
+        conversation_history (List[Dict[str, str]]): Conversation context if exists.
     """
 
     def __init__(
@@ -42,7 +43,7 @@ class LLMService(ABC):
         return self._model
 
     @abstractmethod
-    def generate_chat_response(self) -> str:
+    def chat_completion(self) -> str:
         """
         Generates a response from the language model continuing the chat history.
 
@@ -81,7 +82,7 @@ class OpenAIService(LLMService):
         except (FileNotFoundError, KeyError, json.JSONDecodeError) as e:
             raise ValueError(f"Error loading OpenAI credentials: {e}") from e
 
-    def generate_chat_response(self):
+    def chat_completion(self):
         """Generates a response using the current conversation history."""
         messages = self.conversation_history
 
@@ -122,7 +123,7 @@ class SampleService(LLMService):
     def __init__(self, model: str = "sample", initial_prompt: str | None = None):
         super().__init__(model, initial_prompt)
 
-    def generate_chat_response(self):
+    def chat_completion(self):
 
         return f"(Local AI) You said: {self.conversation_history[-1]['content']}"
 
@@ -130,31 +131,37 @@ class SampleService(LLMService):
         return f"(Local AI) System was prompted {system_prompt}, user message was {user_input}"
 
 
-class ModelFactory:
+class LLMServiceFactory:
     """
-    Factory class to dynamically select the LLM backend based on configuration.
+    Factory class to dynamically LLM services based on backend and specific service configuration.
+
+    Args:
+        llm_backend (str): Defines base model to use with its configurations.
+        service_type (str): Defines type of service called. E.g. dungeon-master, character-creator.
+        config_path (pathlib.Path): Path to LLM services config file.
     """
 
-    def __init__(self, llm_backend: str, config_path: pathlib.Path = BACKEND_CONFIG):
+    def __init__(
+        self, llm_backend: str, service_type: str, config_path: pathlib.Path = BACKEND_CONFIG
+    ):
         self.llm_backend = llm_backend
+        self.service_type = service_type
 
         with open(config_path, encoding="utf-8") as file:
-            self.backend_config = yaml.safe_load(file)["backends"][self.llm_backend]
+            config = yaml.safe_load(file)
+            self.backend_config = config["backends"][self.llm_backend]
+            self.service_config = config["services"][self.service_type]
 
-    def get_model_service(self) -> LLMService | None:
+    def get_service(self) -> LLMService | None:
         """
         Returns an instance of the selected LLM service.
 
-        Args:
-            backend (str): The model backend to use.
-            temperature (float): Temperature setting for response creativity.
-
         Returns:
-            LLMService: An instance of the chosen model service.
+            LLMService: An instance of the chosen LLM service.
         """
-        initial_prompt = self.backend_config.get("initial_prompt", None)
+        initial_prompt = self.service_config.get("initial_prompt", None)
 
-        if self.llm_backend == "chatgptv1":
+        if self.llm_backend.startswith("chatgpt"):
             openai_service = OpenAIService(
                 model=self.backend_config["model"],
                 temperature=self.backend_config["temperature"],
