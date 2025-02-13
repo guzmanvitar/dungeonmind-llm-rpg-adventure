@@ -97,7 +97,7 @@ Once the character's basic details are determined, the character sheet is automa
 Additionally, the system calculates:
 - **Starting Hit Points (HP):** `Hit Die + Constitution Modifier`
 - **Armor Class (AC):** Determined by starting armor and Dexterity modifier.
-- **Gold & Inventory:** The starting equipment is automatically assigned based on class and background. Any missing items are fetched from the equipment database.
+- **Gold & Inventory:** The starting equipment is automatically assigned based on class and background.
 
 ### 📊 Database ER Diagram
 ![DatabaseDiagram](https://github.com/user-attachments/assets/d0a12974-c676-4585-af2e-4a49c38db871)
