@@ -20,6 +20,26 @@ It leverages Large Language Models (LLMs) for inmersive, interactive, and ever-n
 | **Storage**   | SQLite for game state persistence |
 | **Vector Search** | (Planned) Pinecone/Qdrant for rule retrieval |
 
+## 🎲 Game Mechanics
+
+### 🏹 Character Creation
+
+The game begins by prompting the player to describe who they are. Based on the player's response, the system parses and assigns a **race**, **class**, and **background** using a natural language model. If the response is ambiguous or incomplete, the system falls back to common default values.
+
+Once the character's basic details are determined, the character sheet is automatically populated using **relational database mappings** that assign appropriate **traits**, **proficiencies**, **starting equipment**, and **abilities** based on:
+
+- **Race:** Determines ability score bonuses, racial traits, and movement speed.
+- **Class:** Determines hit die, primary ability, class proficiencies, starting armor, weapons, and spells.
+- **Background:** Determines skill proficiencies, starting equipment, and starting gold.
+
+Additionally, the system calculates:
+- **Starting Hit Points (HP):** `Hit Die + Constitution Modifier`
+- **Armor Class (AC):** Determined by starting armor and Dexterity modifier.
+- **Gold & Inventory:** The starting equipment is automatically assigned based on class and background.
+
+### 📊 Database ER Diagram
+![DatabaseDiagram](https://github.com/user-attachments/assets/d0a12974-c676-4585-af2e-4a49c38db871)
+
 
 ## 📁 Project Structure
 ```
@@ -81,26 +101,6 @@ uv run uvicorn src.backend.orchestrator.main:app
 ```bash
 uv run src/frontend/app.py
 ```
-
-## 🎲 Game Mechanics
-
-### 🏹 Character Creation
-
-The game begins by prompting the player to describe who they are. Based on the player's response, the system parses and assigns a **race**, **class**, and **background** using a natural language model. If the response is ambiguous or incomplete, the system falls back to common default values.
-
-Once the character's basic details are determined, the character sheet is automatically populated using **relational database mappings** that assign appropriate **traits**, **proficiencies**, **starting equipment**, and **abilities** based on:
-
-- **Race:** Determines ability score bonuses, racial traits, and movement speed.
-- **Class:** Determines hit die, primary ability, class proficiencies, starting armor, weapons, and spells.
-- **Background:** Determines skill proficiencies, starting equipment, and starting gold.
-
-Additionally, the system calculates:
-- **Starting Hit Points (HP):** `Hit Die + Constitution Modifier`
-- **Armor Class (AC):** Determined by starting armor and Dexterity modifier.
-- **Gold & Inventory:** The starting equipment is automatically assigned based on class and background.
-
-### 📊 Database ER Diagram
-![DatabaseDiagram](https://github.com/user-attachments/assets/d0a12974-c676-4585-af2e-4a49c38db871)
 
 ## 🔮 Roadmap (Upcoming Features)
 
