@@ -22,9 +22,9 @@ logger = get_logger(__file__)
 class CharacterManager:
     """Handles character creation, retrieval, and description for DungeonMind."""
 
-    def __init__(self, db: Session, llm_service: LLMService):
+    def __init__(self, db: Session, character_service: LLMService):
         self.db = db
-        self.llm_service = llm_service
+        self.character_service = character_service
 
     def get_available_options(self):
         """Fetch all available races, classes, and backgrounds from the database."""
@@ -39,24 +39,19 @@ class CharacterManager:
         """
         available_races, available_classes, available_backgrounds = self.get_available_options()
 
-        system_prompt = f"""You are an expert in character creation for Dungeons & Dragons.
-        Based on the user's message, determine their most likely:
-        - Character name
-        - Race (Choose from: {', '.join(available_races)})
-        - Class (Choose from: {', '.join(available_classes)})
-        - Background (Choose from: {', '.join(available_backgrounds)})
-
-        If the input is unclear, use the default: Adventurer Human Ranger Urchin.
-        Respond with only a JSON object like this:
-        {{
-            "name": "Arthur",
-            "race": "Elf",
-            "class": "Wizard",
-            "background": "Sage"
-        }}
+        options_prompt = f"""
+        Race can only be one from {', '.join(available_races)}
+        Class can only be one from  {', '.join(available_classes)}
+        Background can only be one from {', '.join(available_backgrounds)}
         """
 
-        response = self.llm_service.generate_one_off_response(system_prompt, user_message)
+        self.character_service.conversation_history.extend(
+            [
+                {"role": "system", "content": options_prompt},
+                {"role": "user", "content": user_message},
+            ]
+        )
+        response = self.character_service.chat_completion()
 
         try:
             parsed_data = json.loads(response)
@@ -73,7 +68,7 @@ class CharacterManager:
                     else "Ranger"
                 ),
                 (
-                    parsed_data.get("background", "Urchin")
+                    parsed_data.get("background", "Folk Hero")
                     if parsed_data.get("background") in available_backgrounds
                     else "Urchin"
                 ),

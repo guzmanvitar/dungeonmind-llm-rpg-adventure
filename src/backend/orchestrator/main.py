@@ -5,6 +5,8 @@ This module provides an API for handling chat interactions with a language model
 It processes user input, maintains conversation history, and generates AI-driven responses.
 """
 
+from functools import partial
+
 import yaml
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,7 +17,7 @@ from src.backend.database.models import Character
 from src.backend.game_dynamics.character_creation import CharacterManager
 from src.backend.orchestrator.models import ChatRequest, ChatResponse
 from src.backend.orchestrator.routes.character import router as character_router
-from src.backend.orchestrator.services import LLMService, ModelFactory
+from src.backend.orchestrator.services import LLMService, LLMServiceFactory
 from src.constants import BACKEND_CONFIG
 from src.logger_definition import get_logger
 
@@ -39,14 +41,14 @@ app.add_middleware(
 
 
 # Get db and llm services
-def get_llm_service() -> LLMService | None:
+def get_llm_service(service_type: str) -> LLMService | None:
     """Dependency injection for selecting the LLM service."""
-    # Initialize ModelFactory with selected backend
+    # Initialize LLMServiceFactory with selected backend
     with open(BACKEND_CONFIG, encoding="utf-8") as file:
         selected_backend = yaml.safe_load(file).get("selected_backend", "samplev1")
 
-    model_factory = ModelFactory(selected_backend)
-    llm_service = model_factory.get_model_service()
+    model_factory = LLMServiceFactory(selected_backend, service_type)
+    llm_service = model_factory.get_service()
 
     return llm_service
 
@@ -63,7 +65,8 @@ def get_db():
 @app.post("/chat", response_model=ChatResponse)
 def chat(
     request: ChatRequest,
-    llm_service: LLMService = Depends(get_llm_service),
+    dungeon_master: LLMService = Depends(partial(get_llm_service, "dungeon-master")),
+    character_creator: LLMService = Depends(partial(get_llm_service, "character-creation")),
     db: Session = Depends(get_db),
 ):
     """Handles chat interactions and injects character stats into the LLM context."""
@@ -72,7 +75,7 @@ def chat(
     # Initialize character
     if not db.query(Character).first():
         # TODO: When session management is added, replace this with user-specific character lookup
-        character_manager = CharacterManager(db, llm_service)
+        character_manager = CharacterManager(db, character_creator)
 
         character, race, char_class, background = character_manager.create_character(
             request.user_message
@@ -102,14 +105,14 @@ def chat(
         logger.info("Character created")
         return ChatResponse(assistant_message=chat_response, metadata=metadata)
 
-    # Initilize llm service with request conversation history
-    llm_service.conversation_history = (
-        llm_service.conversation_history + request.conversation_history
+    # Initilize dungeon master service with request conversation history
+    dungeon_master.conversation_history = (
+        dungeon_master.conversation_history + request.conversation_history
     )
 
     # Append message to llm chat history and generate next response
-    llm_service.conversation_history.append({"role": "user", "content": request.user_message})
-    assistant_reply = llm_service.generate_chat_response()
+    dungeon_master.conversation_history.append({"role": "user", "content": request.user_message})
+    assistant_reply = dungeon_master.chat_completion()
 
     return ChatResponse(assistant_message=assistant_reply, metadata=metadata)
 
