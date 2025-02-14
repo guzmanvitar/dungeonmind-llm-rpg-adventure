@@ -14,6 +14,11 @@ backends:
     model: "gpt-4"
     temperature: 0.7
 
+  mixtral:
+    model: "mistralai/Mistral-7B-Instruct-v0.1"
+    temperature: 0.1 # Near deterministic output for testing
+
+
 services:
   dungeon-master:
     initial_prompt: |

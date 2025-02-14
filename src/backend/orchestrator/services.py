@@ -8,8 +8,10 @@ import json
 import pathlib
 from abc import ABC, abstractmethod
 
+import torch
 import yaml
 from openai import OpenAI
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from src.constants import BACKEND_CONFIG, SECRETS
 
@@ -55,6 +57,15 @@ class LLMService(ABC):
     def generate_one_off_response(self, system_prompt: str, user_input: str) -> str:
         """
         Generates a response from the language model without affecting chat continuity.
+
+        Returns:
+            str: The model-generated response.
+        """
+
+    @abstractmethod
+    def generate_formatted_response(self, formatted_prompt: str) -> str:
+        """
+        Generates a response from a pre-formatted prompt.
 
         Returns:
             str: The model-generated response.
@@ -113,6 +124,101 @@ class OpenAIService(LLMService):
 
         return response
 
+    def generate_formatted_response(self, formatted_prompt: str):
+        """Generates a response from a pre-formatted prompt."""
+        messages = [{"role": "user", "content": formatted_prompt}]
+
+        response = (
+            self.client.chat.completions.create(
+                model=self.model, messages=messages, temperature=self.temperature
+            )
+            .choices[0]
+            .message.content
+        )
+
+        return response
+
+
+class MixtralService(LLMService):
+    """
+    Mixtral-based LLM service.
+    """
+
+    def __init__(
+        self,
+        model: str = "mistralai/Mistral-7B-Instruct-v0.1",
+        initial_prompt: str | None = None,
+        temperature: float | None = 0.7,
+    ):
+        super().__init__(model, initial_prompt)
+        self.temperature = temperature
+
+        try:
+            # Load Hugging Face API token
+            with open(SECRETS / "huggingface-creds.json", encoding="utf-8") as f:
+                hf_token = json.load(f)["hf_token"]
+
+            self.tokenizer = AutoTokenizer.from_pretrained(model, token=hf_token)
+            self.inference = AutoModelForCausalLM.from_pretrained(
+                self.model,
+                torch_dtype=torch.float32,
+                device_map={"": "cpu"},
+                token=hf_token,
+                low_cpu_mem_usage=True,
+            )
+        except (FileNotFoundError, KeyError, json.JSONDecodeError) as e:
+            raise ValueError(f"Error loading Hugging Face credentials: {e}") from e
+
+    def chat_completion(self):
+        """Generates a response using the current conversation history."""
+        messages = [{"role": "system", "content": self.initial_prompt}] + self.conversation_history
+
+        # Construct prompt from conversation history
+        prompt = "\n".join(f"{msg['role'].capitalize()}: {msg['content']}" for msg in messages)
+
+        inputs = self.tokenizer(prompt, return_tensors="pt").to(
+            "cuda" if torch.cuda.is_available() else "cpu"
+        )
+        outputs = self.inference.generate(**inputs, max_length=512)
+
+        response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+        return response
+
+    def generate_one_off_response(self, system_prompt: str, user_input: str):
+        """
+        Generates a response from the language model without affecting chat continuity.
+        Keeps API consistency with OpenAIService.
+        """
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_input},
+        ]
+
+        formatted_prompt = "\n".join(
+            f"{msg['role'].capitalize()}: {msg['content']}" for msg in messages
+        )
+
+        inputs = self.tokenizer(formatted_prompt, return_tensors="pt").to(
+            "cuda" if torch.cuda.is_available() else "cpu"
+        )
+        outputs = self.inference.generate(**inputs, max_length=512, temperature=self.temperature)
+
+        response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+        return response
+
+    def generate_formatted_response(self, formatted_prompt: str):
+        """
+        Generates a response from Mixtral using a pre-formatted prompt.
+        Useful for direct prompt testing.
+        """
+        inputs = self.tokenizer(formatted_prompt, return_tensors="pt").to(
+            "cuda" if torch.cuda.is_available() else "cpu"
+        )
+        outputs = self.inference.generate(**inputs, max_length=512, temperature=self.temperature)
+
+        response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+        return response
+
 
 class SampleService(LLMService):
     """
@@ -128,6 +234,10 @@ class SampleService(LLMService):
 
     def generate_one_off_response(self, system_prompt: str, user_input: str):
         return f"(Local AI) System was prompted {system_prompt}, user message was {user_input}"
+
+    def generate_formatted_response(self, formatted_prompt: str):
+        """Generates a response from a pre-formatted prompt."""
+        return f"(Local AI) Prompt was: '{formatted_prompt}'"
 
 
 class LLMServiceFactory:
@@ -151,7 +261,7 @@ class LLMServiceFactory:
             self.backend_config = config["backends"][self.llm_backend]
             self.service_config = config["services"][self.service_type]
 
-    def get_service(self) -> LLMService | None:
+    def get_service(self) -> LLMService:
         """
         Returns an instance of the selected LLM service.
 
@@ -167,6 +277,13 @@ class LLMServiceFactory:
                 initial_prompt=initial_prompt,
             )
             return openai_service
+
+        elif self.llm_backend == "mixtral":
+            return MixtralService(
+                model=self.backend_config["model"],
+                initial_prompt=initial_prompt,
+                temperature=self.backend_config["temperature"],
+            )
 
         elif self.llm_backend == "samplev1":
             sample_service = SampleService(
