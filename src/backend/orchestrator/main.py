@@ -47,8 +47,8 @@ def get_llm_service(service_type: str) -> LLMService | None:
     with open(BACKEND_CONFIG, encoding="utf-8") as file:
         selected_backend = yaml.safe_load(file).get("selected_backend", "samplev1")
 
-    model_factory = LLMServiceFactory(selected_backend, service_type)
-    llm_service = model_factory.get_service()
+    service_factory = LLMServiceFactory(selected_backend, service_type)
+    llm_service = service_factory.get_service()
 
     return llm_service
 
