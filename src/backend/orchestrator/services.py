@@ -84,7 +84,7 @@ class OpenAIService(LLMService):
 
     def chat_completion(self):
         """Generates a response using the current conversation history."""
-        messages = self.conversation_history
+        messages = [{"role": "system", "content": self.initial_prompt}] + self.conversation_history
 
         # Get response from current history
         response = (
@@ -103,7 +103,6 @@ class OpenAIService(LLMService):
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_input},
         ]
-
         response = (
             self.client.chat.completions.create(
                 model=self.model, messages=messages, temperature=self.temperature
@@ -167,10 +166,6 @@ class LLMServiceFactory:
                 temperature=self.backend_config["temperature"],
                 initial_prompt=initial_prompt,
             )
-            if initial_prompt:
-                openai_service.conversation_history.append(
-                    {"role": "system", "content": initial_prompt}
-                )
             return openai_service
 
         elif self.llm_backend == "samplev1":
@@ -178,10 +173,6 @@ class LLMServiceFactory:
                 model=self.backend_config["model"],
                 initial_prompt=initial_prompt,
             )
-            if initial_prompt:
-                sample_service.conversation_history.append(
-                    {"role": "system", "content": initial_prompt}
-                )
             return sample_service
         else:
             raise ValueError(f"Unsupported backend: {self.llm_backend}")
