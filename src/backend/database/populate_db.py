@@ -12,10 +12,8 @@ from src.backend.database.models import (
     Trait,
 )
 
-# Create a new database session
-session = Session(bind=engine)
-
-
+# -- Raw Data ---
+# Traits
 traits = [
     Trait(
         index="extra-language",
@@ -140,12 +138,8 @@ traits = [
     ),
 ]
 
-# Insert traits into the database
-session.add_all(traits)
-session.commit()
 
-
-# --- Races (Core 5e) ---
+# Races
 races = [
     Race(
         name="Human",
@@ -211,34 +205,7 @@ races = [
     ),
 ]
 
-# Assign traits to races
-race_traits = {
-    "Human": ["extra-language"],
-    "Elf": ["darkvision", "keen-senses", "fey-ancestry", "trance"],
-    "Dwarf": ["darkvision", "dwarven-resilience", "stonecunning"],
-    "Halfling": ["brave", "lucky", "halfling-nimbleness"],
-    "Dragonborn": ["draconic-ancestry", "breath-weapon", "damage-resistance"],
-    "Gnome": ["darkvision", "gnome-cunning"],
-    "Half-Elf": ["darkvision", "fey-ancestry", "skill-versatility"],
-    "Half-Orc": ["darkvision", "menacing", "relentless-endurance", "savage-attacks"],
-    "Tiefling": ["darkvision", "hellish-resistance", "infernal-legacy"],
-}
-
-trait_map = {trait.index: trait for trait in session.query(Trait).all()}
-
-for race in races:
-    if race.name in race_traits:
-        for trait_index in race_traits[race.name]:
-            if trait_index in trait_map:
-                race.traits.append(trait_map[trait_index])
-
-session.add_all(races)
-session.commit()
-
-print("✅ Races successfully populated along with their Trait mappings!")
-
-
-# List of proficiencies categorized by type
+# Proficiencies (categorized by type)
 proficiencies = [
     # Skills
     Proficiency(
@@ -521,10 +488,7 @@ proficiencies = [
     ),
 ]
 
-session.add_all(proficiencies)
-session.commit()
-
-# List of equipments categorized by type
+# Equipments (categorized by type)
 equipment_items = [
     # Simple Melee Weapons
     Equipment(
@@ -1415,11 +1379,7 @@ equipment_items = [
     ),
 ]
 
-session.add_all(equipment_items)
-session.commit()
-
-
-# --- Classes (Core 5e) ---
+# Classes
 classes = [
     CharacterClass(
         name="Barbarian",
@@ -1519,93 +1479,7 @@ classes = [
     ),
 ]
 
-proficiency_dict = {p.name: p for p in session.query(Proficiency).all()}
-
-proficiency_mapping = {
-    "Barbarian": ["Light Armor", "Medium Armor", "Shields", "Simple Weapons", "Martial Weapons"],
-    "Bard": [
-        "Light Armor",
-        "Simple Weapons",
-        "Hand Crossbows",
-        "Longswords",
-        "Rapiers",
-        "Shortswords",
-    ],
-    "Cleric": ["Light Armor", "Medium Armor", "Shields", "Simple Weapons"],
-    "Druid": [
-        "Light Armor",
-        "Medium Armor",
-        "Shields",
-        "Clubs",
-        "Daggers",
-        "Quarterstaffs",
-        "Scimitars",
-        "Sickles",
-        "Spears",
-    ],
-    "Fighter": ["All Armor", "Shields", "Simple Weapons", "Martial Weapons"],
-    "Monk": ["Simple Weapons", "Shortswords"],
-    "Paladin": ["All Armor", "Shields", "Simple Weapons", "Martial Weapons"],
-    "Ranger": ["Light Armor", "Medium Armor", "Shields", "Simple Weapons", "Martial Weapons"],
-    "Rogue": [
-        "Light Armor",
-        "Simple Weapons",
-        "Hand Crossbows",
-        "Longswords",
-        "Rapiers",
-        "Shortswords",
-        "Thieves' Tools",
-    ],
-    "Sorcerer": ["Daggers", "Darts", "Slings", "Quarterstaffs", "Light Crossbows"],
-    "Warlock": ["Light Armor", "Simple Weapons"],
-    "Wizard": ["Daggers", "Quarterstaffs", "Light Crossbows"],
-}
-
-# Assign proficiencies to classes
-for character_class in classes:
-    if character_class.name in proficiency_mapping:
-        class_proficiencies = [
-            proficiency_dict[prof_name]
-            for prof_name in proficiency_mapping[character_class.name]
-            if prof_name in proficiency_dict
-        ]
-        character_class.proficiencies = class_proficiencies
-
-
-equipment_dict = {e.name: e for e in session.query(Equipment).all()}
-
-starting_equipment_mapping = {
-    "Barbarian": ["Greataxe", "Handaxe"],
-    "Bard": ["Rapier", "Leather Armor", "Lute"],
-    "Cleric": ["Mace", "Scale Mail", "Shield"],
-    "Druid": ["Quarterstaff", "Leather Armor", "Druidic Focus"],
-    "Fighter": ["Longsword", "Handaxe", "Chain Mail", "Shield", "Light Crossbow"],
-    "Monk": ["Shortsword", "Dart"],
-    "Paladin": ["Greatsword", "Chain Mail", "Shield"],
-    "Ranger": ["Longbow", "Leather Armor", "Shortsword"],
-    "Rogue": ["Rapier", "Leather Armor", "Dagger", "Thieves' Tools"],
-    "Sorcerer": ["Quarterstaff", "Arcane Focus"],
-    "Warlock": ["Dagger", "Leather Armor", "Arcane Focus"],
-    "Wizard": ["Quarterstaff", "Spellbook"],
-}
-
-# Assign starting equipment to classes
-for character_class in classes:
-    if character_class.name in starting_equipment_mapping:
-        class_equipment = [
-            equipment_dict[item_name]
-            for item_name in starting_equipment_mapping[character_class.name]
-            if item_name in equipment_dict
-        ]
-        character_class.starting_equipment = class_equipment  # Assign equipment
-
-
-session.add_all(classes)
-session.commit()
-print("✅ Classes successfully populated along with their proficiencies and starting equipments!")
-
-
-# --- Backgrounds (Core 5e) ---
+# Backgrounds
 backgrounds = [
     Background(
         name="Acolyte",
@@ -1678,6 +1552,76 @@ backgrounds = [
     ),
 ]
 
+
+# --- Mappings ---
+race_traits = {
+    "Human": ["extra-language"],
+    "Elf": ["darkvision", "keen-senses", "fey-ancestry", "trance"],
+    "Dwarf": ["darkvision", "dwarven-resilience", "stonecunning"],
+    "Halfling": ["brave", "lucky", "halfling-nimbleness"],
+    "Dragonborn": ["draconic-ancestry", "breath-weapon", "damage-resistance"],
+    "Gnome": ["darkvision", "gnome-cunning"],
+    "Half-Elf": ["darkvision", "fey-ancestry", "skill-versatility"],
+    "Half-Orc": ["darkvision", "menacing", "relentless-endurance", "savage-attacks"],
+    "Tiefling": ["darkvision", "hellish-resistance", "infernal-legacy"],
+}
+
+proficiency_mapping = {
+    "Barbarian": ["Light Armor", "Medium Armor", "Shields", "Simple Weapons", "Martial Weapons"],
+    "Bard": [
+        "Light Armor",
+        "Simple Weapons",
+        "Hand Crossbows",
+        "Longswords",
+        "Rapiers",
+        "Shortswords",
+    ],
+    "Cleric": ["Light Armor", "Medium Armor", "Shields", "Simple Weapons"],
+    "Druid": [
+        "Light Armor",
+        "Medium Armor",
+        "Shields",
+        "Clubs",
+        "Daggers",
+        "Quarterstaffs",
+        "Scimitars",
+        "Sickles",
+        "Spears",
+    ],
+    "Fighter": ["All Armor", "Shields", "Simple Weapons", "Martial Weapons"],
+    "Monk": ["Simple Weapons", "Shortswords"],
+    "Paladin": ["All Armor", "Shields", "Simple Weapons", "Martial Weapons"],
+    "Ranger": ["Light Armor", "Medium Armor", "Shields", "Simple Weapons", "Martial Weapons"],
+    "Rogue": [
+        "Light Armor",
+        "Simple Weapons",
+        "Hand Crossbows",
+        "Longswords",
+        "Rapiers",
+        "Shortswords",
+        "Thieves' Tools",
+    ],
+    "Sorcerer": ["Daggers", "Darts", "Slings", "Quarterstaffs", "Light Crossbows"],
+    "Warlock": ["Light Armor", "Simple Weapons"],
+    "Wizard": ["Daggers", "Quarterstaffs", "Light Crossbows"],
+}
+
+
+starting_equipment_mapping = {
+    "Barbarian": ["Greataxe", "Handaxe"],
+    "Bard": ["Rapier", "Leather Armor", "Lute"],
+    "Cleric": ["Mace", "Scale Mail", "Shield"],
+    "Druid": ["Quarterstaff", "Leather Armor", "Druidic Focus"],
+    "Fighter": ["Longsword", "Handaxe", "Chain Mail", "Shield", "Light Crossbow"],
+    "Monk": ["Shortsword", "Dart"],
+    "Paladin": ["Greatsword", "Chain Mail", "Shield"],
+    "Ranger": ["Longbow", "Leather Armor", "Shortsword"],
+    "Rogue": ["Rapier", "Leather Armor", "Dagger", "Thieves' Tools"],
+    "Sorcerer": ["Quarterstaff", "Arcane Focus"],
+    "Warlock": ["Dagger", "Leather Armor", "Arcane Focus"],
+    "Wizard": ["Quarterstaff", "Spellbook"],
+}
+
 background_proficiency_mapping = {
     "Acolyte": ["Insight", "Religion"],
     "Charlatan": ["Deception", "Sleight of Hand"],
@@ -1694,15 +1638,6 @@ background_proficiency_mapping = {
     "Urchin": ["Sleight of Hand", "Stealth"],
 }
 
-# Assign proficiencies to backgrounds
-for background in backgrounds:
-    if background.name in background_proficiency_mapping:
-        background_proficiencies = [
-            proficiency_dict[prof_name]
-            for prof_name in background_proficiency_mapping[background.name]
-            if prof_name in proficiency_dict
-        ]
-        background.starting_proficiencies = background_proficiencies
 
 background_equipment_mapping = {
     "Acolyte": ["Holy Symbol"],
@@ -1722,23 +1657,95 @@ background_equipment_mapping = {
     "Urchin": ["City Map"],
 }
 
-# Assign starting equipment to backgrounds
-for background in backgrounds:
-    if background.name in background_equipment_mapping:
-        background_equipment = [
-            equipment_dict[item_name]
-            for item_name in background_equipment_mapping[background.name]
-            if item_name in equipment_dict
-        ]
-        background.starting_equipment = background_equipment
+
+def bulk_insert(session: Session):
+    """Inserts listed data into session defined database"""
+    session.add_all(traits)
+    session.commit()
+
+    trait_map = {trait.index: trait for trait in session.query(Trait).all()}
+
+    for race in races:
+        if race.name in race_traits:
+            for trait_index in race_traits[race.name]:
+                if trait_index in trait_map:
+                    race.traits.append(trait_map[trait_index])
+
+    session.add_all(races)
+    session.commit()
+
+    print("✅ Races successfully populated along with their Trait mappings!")
+
+    session.add_all(proficiencies)
+    session.commit()
+
+    proficiency_dict = {p.name: p for p in session.query(Proficiency).all()}
+
+    # Assign proficiencies to classes
+    for character_class in classes:
+        if character_class.name in proficiency_mapping:
+            class_proficiencies = [
+                proficiency_dict[prof_name]
+                for prof_name in proficiency_mapping[character_class.name]
+                if prof_name in proficiency_dict
+            ]
+            character_class.proficiencies = class_proficiencies
+
+    session.add_all(equipment_items)
+    session.commit()
+
+    equipment_dict = {e.name: e for e in session.query(Equipment).all()}
+
+    # Assign starting equipment to classes
+    for character_class in classes:
+        if character_class.name in starting_equipment_mapping:
+            class_equipment = [
+                equipment_dict[item_name]
+                for item_name in starting_equipment_mapping[character_class.name]
+                if item_name in equipment_dict
+            ]
+            character_class.starting_equipment = class_equipment  # Assign equipment
+
+    session.add_all(classes)
+    session.commit()
+    print(
+        "✅ Classes successfully populated along with their proficiencies and starting equipments!"
+    )
+
+    # Assign proficiencies to backgrounds
+    for background in backgrounds:
+        if background.name in background_proficiency_mapping:
+            background_proficiencies = [
+                proficiency_dict[prof_name]
+                for prof_name in background_proficiency_mapping[background.name]
+                if prof_name in proficiency_dict
+            ]
+            background.starting_proficiencies = background_proficiencies
+
+    # Assign starting equipment to backgrounds
+    for background in backgrounds:
+        if background.name in background_equipment_mapping:
+            background_equipment = [
+                equipment_dict[item_name]
+                for item_name in background_equipment_mapping[background.name]
+                if item_name in equipment_dict
+            ]
+            background.starting_equipment = background_equipment
+
+    session.add_all(backgrounds)
+    session.commit()
+    print(
+        "✅ Backgrounds successfully populated along with their proficiencies and starting"
+        " equipments"
+    )
+
+    # Close the session
+    session.close()
 
 
-# --- Insert Data into Database ---
-session.add_all(backgrounds)
-session.commit()
-print(
-    "✅ Backgrounds successfully populated along with their proficiencies and starting equipments"
-)
+if __name__ == "__main__":
+    # Create a new database session
+    local_session = Session(bind=engine)
 
-# Close the session
-session.close()
+    # Insert Data into Database
+    bulk_insert(local_session)
