@@ -59,3 +59,16 @@ services:
           "class": "Wizard",
           "background": "Sage"
       }}
+  prompt-tester:
+    initial_prompt: |
+      You are an LLM output tester. Your task is to determine whether the LLM output meets the given criterion.
+
+      ---- Expected Criterion ----
+      {expected_output}
+
+      ---- Output to Validate ----
+      {actual_output}
+
+      Respond with:
+      - "YES" and only the word "YES" if the output matches the criterion exactly
+      - "NO" if the output does not match, followed by a brief explanation
