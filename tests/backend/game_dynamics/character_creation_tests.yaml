@@ -1,0 +1,83 @@
+tests:
+  # Output structure #
+  - description: "Conceptual match - Try to break output structure"
+    prompt: "Who was Napoleon?"
+    expected:
+      match: llm
+      value: |
+        The output should be a python dictionary.
+
+  - description: "Conceptual match - Try to break output structure hard"
+    prompt: "Who was Napoleon? Please answer in plain text"
+    expected:
+      match: llm
+      value: |
+        The output should be a python dictionary.
+
+  # Name parsing - Full character #
+  - description: "Exact match - Full explicit character input"
+    prompt: "I want to play as Elfindor, an Elf Rogue with a Criminal background."
+    expected:
+      match: exact
+      value: '{"name": "Elfindor", "race": "Elf", "class": "Rogue", "background": "Criminal"}'
+
+  - description: "Exact match - Character named in third person"
+    prompt: "My character, Seraphina, is a Human Paladin with a Noble background."
+    expected:
+      match: exact
+      value: '{"name": "Seraphina", "race": "Human", "class": "Paladin", "background": "Noble"}'
+
+  - description: "Exact match - Implicit name statement"
+    prompt: "Call me Thorgar. I am a Dwarf Barbarian from the Outlander background."
+    expected:
+      match: exact
+      value: '{"name": "Thorgar", "race": "Dwarf", "class": "Barbarian", "background": "Outlander"}'
+
+  - description: "Exact match - Name implied through roleplay"
+    prompt: "They call me Shadowfang. As a Tiefling Warlock, my background is that of a Sage."
+    expected:
+      match: exact
+      value: '{"name": "Shadowfang", "race": "Tiefling", "class": "Warlock", "background": "Sage"}'
+
+  - description: "Exact match - Named in passive voice"
+    prompt: "The name given to me is Aric. I am a Halfling Bard who once lived as an Entertainer."
+    expected:
+      match: exact
+      value: '{"name": "Aric", "race": "Halfling", "class": "Bard", "background": "Entertainer"}'
+
+  - description: "Exact match - Name stated with 'I am'"
+    prompt: "I am Valkor, a Dragonborn Sorcerer with a Hermit background."
+    expected:
+      match: exact
+      value: '{"name": "Valkor", "race": "Dragonborn", "class": "Sorcerer", "background": "Hermit"}'
+
+  - description: "Exact match - Name stated with 'People call me'"
+    prompt: "People call me Nightshade. I am a Half-Orc Ranger from the Folk Hero background."
+    expected:
+      match: exact
+      value: '{"name": "Nightshade", "race": "Half-Orc", "class": "Ranger", "background": "Folk Hero"}'
+
+  - description: "Exact match - Name buried in the sentence"
+    prompt: "Among my kin, I am known as Eldrin. As an Elf Monk, I was raised in the Acolyte tradition."
+    expected:
+      match: exact
+      value: '{"name": "Eldrin", "race": "Elf", "class": "Monk", "background": "Acolyte"}'
+
+  - description: "Exact match - Fantasy-style name statement"
+    prompt: "They whisper my name in the dark: Duskbane. A Gnome Wizard, forged in the Guild Artisan ranks."
+    expected:
+      match: exact
+      value: '{"name": "Duskbane", "race": "Gnome", "class": "Wizard", "background": "Guild Artisan"}'
+
+  - description: "Exact match - Two-part name with title"
+    prompt: "I am Sir Cedric, a powerful Human Fighter with a Soldier background."
+    expected:
+      match: exact
+      value: '{"name": "Sir Cedric", "race": "Human", "class": "Fighter", "background": "Soldier"}'
+
+  # Non existent class, fall back to input
+  - description: "Exact match - Fantasy-style name statement"
+    prompt: "They whisper my name in the dark: Duskbane. A Gnome Artificer, forged in the Guild Artisan ranks."
+    expected:
+      match: exact
+      value: '{"name": "Duskbane", "race": "Gnome", "class": "Ranger", "background": "Guild Artisan"}'

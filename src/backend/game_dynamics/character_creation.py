@@ -18,6 +18,33 @@ from src.utils import weighted_random_stat
 
 logger = get_logger(__file__)
 
+DEFAULT_NAME = "Adventurer"
+DEFAULT_RACE = "Human"
+DEFAULT_CLASS = "Ranger"
+DEFAULT_BACKGROUND = "Folk Hero"
+
+
+class CharacterCreationError(Exception):
+    """Exception class for handling character creation fails"""
+
+    def __init__(self, message: str, llm_output: str | None = None):
+        """
+        Initializes the exception with a message and optional LLM output.
+
+        Args:
+            message (str): The error message.
+            llm_output (str, optional): The raw output from the LLM that caused the failure.
+        """
+        super().__init__(message)
+        self.llm_output = llm_output
+
+    def __str__(self):
+        """Customize error string representation."""
+        error_message = f"Character Creation Failed: {self.args[0]}"
+        if self.llm_output:
+            error_message += f"\n LLM Output: {self.llm_output}"
+        return error_message
+
 
 class CharacterManager:
     """Handles character creation, retrieval, and description for DungeonMind."""
@@ -55,37 +82,38 @@ class CharacterManager:
 
         try:
             parsed_data = json.loads(response)
-            return (
-                parsed_data.get("name", "Adventurer"),
-                (
-                    parsed_data.get("race", "Human")
+            return {
+                "name": parsed_data.get("name", DEFAULT_NAME),
+                "race": (
+                    parsed_data.get("race", DEFAULT_RACE)
                     if parsed_data.get("race") in available_races
                     else "Human"
                 ),
-                (
-                    parsed_data.get("class", "Ranger")
+                "class": (
+                    parsed_data.get("class", DEFAULT_CLASS)
                     if parsed_data.get("class") in available_classes
                     else "Ranger"
                 ),
-                (
-                    parsed_data.get("background", "Folk Hero")
+                "background": (
+                    parsed_data.get("background", DEFAULT_BACKGROUND)
                     if parsed_data.get("background") in available_backgrounds
                     else "Urchin"
                 ),
-            )
+            }
         except json.JSONDecodeError as e:
-            logger.error("JSON decoding error in character parsing: %s", e)
-        except KeyError as e:
-            logger.error("Missing key in LLM response: %s", e)
-
-        # Fallback to default character
-        return "Adventurer", "Human", "Ranger", "Urchin"
+            logger.error("LLM output is not valid JSON. Raw output: %s", response)
+            raise CharacterCreationError(
+                "LLM output is not valid JSON.", llm_output=response
+            ) from e
 
     def create_character(self, user_message: str):
         """Handles character creation when a player does not already have one."""
-        character_name, race_name, class_name, background_name = self.parse_character_from_text(
-            user_message
-        )
+        parsed_character = self.parse_character_from_text(user_message)
+
+        character_name = parsed_character.get("name", DEFAULT_NAME)
+        race_name = parsed_character.get("race", DEFAULT_RACE)
+        class_name = parsed_character.get("class", DEFAULT_CLASS)
+        background_name = parsed_character.get("background", DEFAULT_BACKGROUND)
 
         # Fetch the corresponding database entries
         race = self.db.query(Race).filter(Race.name == race_name).first()

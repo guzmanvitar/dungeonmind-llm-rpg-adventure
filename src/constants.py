@@ -20,6 +20,11 @@ DATA = ROOT / "data"
 DATA_RAW = DATA / "raw"
 DATA_PROCESSED = DATA / "processed"
 
+MODELS = ROOT / "models"
+
+TESTS_DIR = ROOT / "tests"
+
 LOGS.mkdir(exist_ok=True, parents=True)
 DATA_RAW.mkdir(exist_ok=True, parents=True)
 DATA_PROCESSED.mkdir(exist_ok=True, parents=True)
+MODELS.mkdir(exist_ok=True)
