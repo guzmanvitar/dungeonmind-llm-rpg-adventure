@@ -13,18 +13,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
       - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
+        run: uv python install
 
       - name: Install dependencies
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install -r requirements.txt
+        run: uv sync
 
       - name: Run Tests
         run: |
-          source venv/bin/activate
-          pytest -v -s
+          uv run pytest . -v -s
