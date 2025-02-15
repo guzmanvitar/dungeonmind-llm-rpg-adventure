@@ -70,7 +70,7 @@ tests:
       value: '{"name": "Duskbane", "race": "Gnome", "class": "Wizard", "background": "Guild Artisan"}'
 
   - description: "Exact match - Two-part name with title"
-    prompt: "I am Sir Cedric, a noble Human Fighter from the Soldier background."
+    prompt: "I am Sir Cedric, a powerful Human Fighter with a Soldier background."
     expected:
       match: exact
       value: '{"name": "Sir Cedric", "race": "Human", "class": "Fighter", "background": "Soldier"}'
