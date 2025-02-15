@@ -284,7 +284,7 @@ class LLMServiceFactory:
         """
         initial_prompt = self.service_config.get("initial_prompt", None)
 
-        if self.llm_backend.startswith("chatgpt"):
+        if self.llm_backend.startswith("gpt"):
             openai_service = OpenAIService(
                 model=self.backend_config["model"],
                 temperature=self.backend_config["temperature"],

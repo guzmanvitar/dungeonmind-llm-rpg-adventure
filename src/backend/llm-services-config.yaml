@@ -1,16 +1,16 @@
 # Define which backend to use
-selected_backend: chatgptv1
+selected_backend: gpt3-5
 
 backends:
   samplev1:
     model: "sample"
     temperature: 0.5
 
-  chatgptv1:
+  gpt3-5:
     model: "gpt-3.5-turbo"
     temperature: 0.7
 
-  chatgptv2:
+  gpt-4:
     model: "gpt-4"
     temperature: 0.7
 

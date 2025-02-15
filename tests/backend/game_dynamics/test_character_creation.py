@@ -29,7 +29,7 @@ def test_parse_character_from_text(test_case):
     Tests `parse_character_from_text` using exact match and LLM-based evaluation.
     """
     # Initialize character_manager llm service
-    character_creator = LLMServiceFactory("chatgptv1", "character-creation").get_service()
+    character_creator = LLMServiceFactory("gpt3-5", "character-creation").get_service()
     if not character_creator:
         raise ValueError("Character service creation failed")
 
@@ -50,7 +50,7 @@ def test_parse_character_from_text(test_case):
 
     elif evaluation_type == "llm":
         # Build LLM tester servie
-        tester = LLMServiceFactory("chatgptv2", "prompt-tester").get_service()
+        tester = LLMServiceFactory("gpt-4", "prompt-tester").get_service()
 
         if not tester.initial_prompt:
             raise ValueError("Missing system prompt for tester service")
