@@ -5,6 +5,7 @@ It allows flexibility in switching between different models.
 """
 
 import json
+import os
 import pathlib
 from abc import ABC, abstractmethod
 
@@ -86,12 +87,20 @@ class OpenAIService(LLMService):
         super().__init__(model, initial_prompt)
         self.temperature = temperature
 
-        try:
-            with open(SECRETS / "open-ai-creds.json", encoding="utf-8") as f:
-                api_key = json.load(f).get("key")
-                self.client = OpenAI(api_key=api_key)
-        except (FileNotFoundError, KeyError, json.JSONDecodeError) as e:
-            raise ValueError(f"Error loading OpenAI credentials: {e}") from e
+        # Try fetching API key from environment variables
+        api_key = os.getenv("OPENAI_API_KEY")
+
+        # Fallback to .secrets file if no environment variable is set
+        if not api_key:
+            try:
+                secrets_path = SECRETS / "open-ai-creds.json"
+                with open(secrets_path, encoding="utf-8") as f:
+                    api_key = json.load(f).get("key")
+            except (FileNotFoundError, KeyError, json.JSONDecodeError) as e:
+                raise ValueError(f"Error loading OpenAI credentials: {e}") from e
+
+        # Initialize OpenAI client
+        self.client = OpenAI(api_key=api_key)
 
     def chat_completion(self):
         """Generates a response using the current conversation history."""
@@ -153,21 +162,26 @@ class MixtralService(LLMService):
         super().__init__(model, initial_prompt)
         self.temperature = temperature
 
-        try:
-            # Load Hugging Face API token
-            with open(SECRETS / "huggingface-creds.json", encoding="utf-8") as f:
-                hf_token = json.load(f)["hf_token"]
+        # Try fetching API token from environment variables first
+        hf_token = os.getenv("HUGGINGFACE_API_KEY")
 
-            self.tokenizer = AutoTokenizer.from_pretrained(model, token=hf_token)
-            self.inference = AutoModelForCausalLM.from_pretrained(
-                self.model,
-                torch_dtype=torch.float32,
-                device_map={"": "cpu"},
-                token=hf_token,
-                low_cpu_mem_usage=True,
-            )
-        except (FileNotFoundError, KeyError, json.JSONDecodeError) as e:
-            raise ValueError(f"Error loading Hugging Face credentials: {e}") from e
+        # Fallback to .secrets file if no environment variable is set
+        if not hf_token:
+            try:
+                secrets_path = SECRETS / "huggingface-creds.json"
+                with open(secrets_path, encoding="utf-8") as f:
+                    hf_token = json.load(f).get("hf_token")
+            except (FileNotFoundError, KeyError, json.JSONDecodeError) as e:
+                raise ValueError(f"Error loading Hugging Face credentials: {e}") from e
+
+        self.tokenizer = AutoTokenizer.from_pretrained(model, token=hf_token)
+        self.inference = AutoModelForCausalLM.from_pretrained(
+            self.model,
+            torch_dtype=torch.float32,
+            device_map={"": "cpu"},
+            token=hf_token,
+            low_cpu_mem_usage=True,
+        )
 
     def chat_completion(self):
         """Generates a response using the current conversation history."""
