@@ -10,6 +10,26 @@ BASE_URL = "https://forgottenrealms.fandom.com"
 
 
 class ForgottenRealmsSpider(scrapy.Spider):
+    """
+    A Scrapy spider for crawling the Forgotten Realms Wiki.
+
+    This spider starts at the main Forgotten Realms wiki page and recursively follows
+    internal links to extract:
+    - Titles
+    - Page content
+    - Categories
+    - Links to other wiki pages
+
+    The extracted data is processed into a structured `WikiPageItem` and sent to the
+    `WikiGraphPipeline` for further storage in a NetworkX graph and FAISS vector database.
+
+    Attributes:
+        name (str): The name of the spider.
+        allowed_domains (list): Domains that the spider is allowed to crawl.
+        start_urls (list): The starting page(s) for the crawl.
+        visited_pages (set): A set of already visited URLs to prevent duplicate crawling.
+    """
+
     name = "forgotten_realms"
     allowed_domains = ["forgottenrealms.fandom.com"]
     start_urls = [urljoin(BASE_URL, "/wiki/Forgotten_Realms")]
