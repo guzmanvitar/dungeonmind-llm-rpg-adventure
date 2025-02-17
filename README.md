@@ -18,7 +18,9 @@ It leverages Large Language Models (LLMs) for inmersive, interactive, and ever-n
 | **Backend**   | FastAPI (Python)         |
 | **LLM Service** | OpenAI API (GPT-4, GPT-3.5) |
 | **Storage**   | SQLite for game state persistence |
-| **Vector Search** | (Planned) Pinecone/Qdrant for rule retrieval |
+| **Vector Search** | FAISS for fast semantic search |
+| **Scraper** | Scrapy for Forgotten Realms content extraction |
+| **Graph Database** | NetworkX for lore representation |
 
 ## 🎲 Game Mechanics
 
@@ -37,7 +39,7 @@ Additionally, the system calculates:
 - **Armor Class (AC):** Determined by starting armor and Dexterity modifier.
 - **Gold & Inventory:** The starting equipment is automatically assigned based on class and background.
 
-### 📊 Database ER Diagram
+**Game Database ER Diagram:**
 ![DatabaseDiagram](https://github.com/user-attachments/assets/d0a12974-c676-4585-af2e-4a49c38db871)
 
 
@@ -61,12 +63,12 @@ dungeonmind-llm-rpg-adventure/
 │   ├── static/
 │   │   ├── css/             # Stylesheets
 │   │   ├── js/              # Frontend scripts
-│── data/
-│   ├── raw/                 # Fetched D&D API data
+│── scrapers/
+│   ├── spiders/
+│   │   ├── forgotten_realms.py # Scrapy spider for web crawling
 │── .secrets/
 │   ├── open-ai-creds.json   # API credentials (ignored in repo)
-│── README.md                # Project documentation
-```
+│── README.md                # Project documentation```
 
 ## 🔧 Setup & Installation
 1️⃣ Clone the Repository
