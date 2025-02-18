@@ -3,8 +3,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from src.backend.database.config import SessionLocal
 from src.backend.database.models import Background, Character, CharacterClass, Race
+from src.backend.utils import get_db
 
 router = APIRouter()
 
@@ -12,15 +12,6 @@ router = APIRouter()
 DEFAULT_RACE = "Human"
 DEFAULT_CLASS = "Ranger"
 DEFAULT_BACKGROUND = "Folk Hero"
-
-
-def get_db():
-    """Dependency to get a new database session."""
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @router.get("/character")

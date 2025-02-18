@@ -12,6 +12,7 @@ from src.backend.database.models import (
     Equipment,
     Race,
 )
+from src.backend.orchestrator.models import ChatRequest, ChatResponse
 from src.backend.orchestrator.services import LLMService
 from src.logger_definition import get_logger
 from src.utils import weighted_random_stat
@@ -279,3 +280,30 @@ class CharacterManager:
         Inventory:
         {inventory_list}
         """
+
+    def initialize_character(self, request: ChatRequest) -> ChatResponse:
+        """Handles character initialization based on user starting location message"""
+        character, race, char_class, background = self.create_character(request.user_message)
+
+        # Add game context & character details to metadata
+        character_summary = self.get_character_summary(character, race, char_class, background)
+
+        char_metadata = [
+            {
+                "role": "system",
+                "content": "Game Context: As Dungeon Master you are aware of the character's stats"
+                " and abilities.",
+            },
+            {"role": "system", "content": character_summary},
+        ]
+
+        # Get next prompt and append it to chat history
+        chat_response = (
+            f"Ah, {character.name}, the world stirs at your arrival, eager to test"
+            " your mettle. Tell me, traveler, where does your story begin? In the depths of a"
+            " forgotten dungeon, in the bustling streets of a grand city, or upon the windswept"
+            " plains of an untamed land?"
+        )
+
+        logger.info("Character created")
+        return ChatResponse(assistant_message=chat_response, metadata=char_metadata)
