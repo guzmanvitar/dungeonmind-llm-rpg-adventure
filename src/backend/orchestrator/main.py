@@ -12,12 +12,12 @@ from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
-from src.backend.database.config import SessionLocal
 from src.backend.database.models import Character
 from src.backend.game_dynamics.character_creation import CharacterManager
 from src.backend.orchestrator.models import ChatRequest, ChatResponse
 from src.backend.orchestrator.routes.character import router as character_router
 from src.backend.orchestrator.services import LLMService, LLMServiceFactory
+from src.backend.utils import get_db
 from src.constants import BACKEND_CONFIG
 from src.logger_definition import get_logger
 
@@ -51,15 +51,6 @@ def get_llm_service(service_type: str) -> LLMService | None:
     llm_service = service_factory.get_service()
 
     return llm_service
-
-
-def get_db():
-    """Dependency to get a new database session."""
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @app.post("/chat", response_model=ChatResponse)
