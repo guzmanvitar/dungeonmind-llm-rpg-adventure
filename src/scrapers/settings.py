@@ -25,15 +25,15 @@ NEWSPIDER_MODULE = "src.scrapers.spiders"
 ROBOTSTXT_OBEY = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 256
+CONCURRENT_REQUESTS = 64
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
 DOWNLOAD_DELAY = 0
 # The download delay setting will honor only one of:
-CONCURRENT_REQUESTS_PER_DOMAIN = 256
-CONCURRENT_REQUESTS_PER_IP = 256
+CONCURRENT_REQUESTS_PER_DOMAIN = 64
+CONCURRENT_REQUESTS_PER_IP = 64
 
 # Enable HTTP/2 for faster connections
 HTTP2_ENABLED = True
@@ -46,7 +46,7 @@ TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
 
 # Enable async requests with aiohttp (requires `scrapy-aiohttp`)
-DOWNLOADER_CLIENT_CONCURRENCY = 256
+DOWNLOADER_CLIENT_CONCURRENCY = 64
 
 # Disable AutoThrottle (Scrapy dynamically adjusts speed, but we want max speed)
 AUTOTHROTTLE_ENABLED = False

@@ -20,7 +20,7 @@ class ForgottenRealmsSpider(scrapy.Spider):
 
     def parse(self, response):
         """Extracts page content and links, yielding structured data."""
-        page_url = response.url
+        page_url = response.url.split("?")[0]
 
         # Avoid duplicate processing
         if page_url in self.visited_pages:
@@ -41,11 +41,11 @@ class ForgottenRealmsSpider(scrapy.Spider):
 
         # Extract all links, filtering out unwanted ones
         links = [
-            urljoin(BASE_URL, href)
+            urljoin(BASE_URL, href.split("?")[0])
             for href in response.css("div.mw-parser-output a::attr(href)").getall()
             if href.startswith("/wiki/")
             and ":" not in href  # Avoid special pages
-            and not href.startswith("#cite_note")  # Exclude citation links
+            and "#cite_note" not in href  # Exclude citation links
         ]
 
         # Remove links inside the "References" section
@@ -54,8 +54,8 @@ class ForgottenRealmsSpider(scrapy.Spider):
             .xpath("following-sibling::ul[1]//a/@href")
             .getall()
         )
-        reference_links = {urljoin(BASE_URL, ref) for ref in reference_section}
-        links = [link for link in links if link not in reference_links]
+        reference_links = {urljoin(BASE_URL, ref.split("?")[0]) for ref in reference_section}
+        links = {link for link in links if link not in reference_links}
 
         # Create a structured Scrapy item and send it to pipeline
         yield WikiPageItem(
