@@ -11,6 +11,7 @@ from abc import ABC, abstractmethod
 
 import torch
 import yaml
+from langchain_community.embeddings import OpenAIEmbeddings
 from openai import OpenAI
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -83,6 +84,7 @@ class OpenAIService(LLMService):
         model: str = "gpt-4",
         initial_prompt: str | None = None,
         temperature: float | None = 0.7,
+        embedding_version: str = "text-embedding-ada-002",
     ):
         super().__init__(model, initial_prompt)
         self.temperature = temperature
@@ -101,6 +103,7 @@ class OpenAIService(LLMService):
 
         # Initialize OpenAI client
         self.client = OpenAI(api_key=api_key)
+        self.embedding_model = OpenAIEmbeddings(model=embedding_version, openai_api_key=api_key)
 
     def chat_completion(self):
         """Generates a response using the current conversation history."""
