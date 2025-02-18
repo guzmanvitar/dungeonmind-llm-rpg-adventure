@@ -12,7 +12,7 @@ BASE_URL = "https://forgottenrealms.fandom.com"
 class ForgottenRealmsSpider(scrapy.Spider):
     name = "forgotten_realms"
     allowed_domains = ["forgottenrealms.fandom.com"]
-    start_urls = [urljoin(BASE_URL, "/wiki/Forgotten_Realms")]
+    start_urls = [urljoin(BASE_URL, "/wiki/Abeir-Toril")]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -39,12 +39,23 @@ class ForgottenRealmsSpider(scrapy.Spider):
         categories = response.css(".page-header__categories-in + a::text").getall()
         categories = categories if categories else ["Uncategorized"]
 
-        # Extract links to other wiki pages
+        # Extract all links, filtering out unwanted ones
         links = [
             urljoin(BASE_URL, href)
             for href in response.css("div.mw-parser-output a::attr(href)").getall()
-            if href.startswith("/wiki/") and ":" not in href  # Avoid special pages
+            if href.startswith("/wiki/")
+            and ":" not in href  # Avoid special pages
+            and not href.startswith("#cite_note")  # Exclude citation links
         ]
+
+        # Remove links inside the "References" section
+        reference_section = (
+            response.css("span.mw-headline#References")
+            .xpath("following-sibling::ul[1]//a/@href")
+            .getall()
+        )
+        reference_links = {urljoin(BASE_URL, ref) for ref in reference_section}
+        links = [link for link in links if link not in reference_links]
 
         # Create a structured Scrapy item and send it to pipeline
         yield WikiPageItem(
