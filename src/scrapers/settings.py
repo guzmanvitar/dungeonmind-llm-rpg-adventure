@@ -25,15 +25,40 @@ NEWSPIDER_MODULE = "src.scrapers.spiders"
 ROBOTSTXT_OBEY = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 128
+CONCURRENT_REQUESTS = 256
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-# DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 0
 # The download delay setting will honor only one of:
-# CONCURRENT_REQUESTS_PER_DOMAIN = 16
-# CONCURRENT_REQUESTS_PER_IP = 16
+CONCURRENT_REQUESTS_PER_DOMAIN = 256
+CONCURRENT_REQUESTS_PER_IP = 256
+
+# Enable HTTP/2 for faster connections
+HTTP2_ENABLED = True
+
+# Enable DNS in-memory cache for faster lookups
+DNSCACHE_ENABLED = True
+
+# Set settings whose default value is deprecated to a future-proof value
+TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
+FEED_EXPORT_ENCODING = "utf-8"
+
+# Enable async requests with aiohttp (requires `scrapy-aiohttp`)
+DOWNLOADER_CLIENT_CONCURRENCY = 256
+
+# Disable AutoThrottle (Scrapy dynamically adjusts speed, but we want max speed)
+AUTOTHROTTLE_ENABLED = False
+
+# Configure item pipelines
+# See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+ITEM_PIPELINES = {
+    "scrapers.pipelines.WikiGraphPipeline": 300,
+}
+
+# Reduce logging overhead
+LOG_LEVEL = "INFO"
 
 # Disable cookies (enabled by default)
 # COOKIES_ENABLED = False
@@ -56,8 +81,11 @@ CONCURRENT_REQUESTS = 128
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 # DOWNLOADER_MIDDLEWARES = {
-#    "scrapers.middlewares.ScrapersDownloaderMiddleware": 543,
+#     "scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware": 300,  # Keep HTTP
+# compression
+#     "scrapy_aiohttp.AioHttpDownloadHandler": 543,  # Enable aiohttp-based downloading
 # }
+
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -65,11 +93,6 @@ CONCURRENT_REQUESTS = 128
 #    "scrapy.extensions.telnet.TelnetConsole": None,
 # }
 
-# Configure item pipelines
-# See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-ITEM_PIPELINES = {
-    "scrapers.pipelines.WikiGraphPipeline": 300,
-}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
@@ -92,7 +115,3 @@ ITEM_PIPELINES = {
 # HTTPCACHE_DIR = "httpcache"
 # HTTPCACHE_IGNORE_HTTP_CODES = []
 # HTTPCACHE_STORAGE = "scrapy.extensions.httpcache.FilesystemCacheStorage"
-
-# Set settings whose default value is deprecated to a future-proof value
-TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
-FEED_EXPORT_ENCODING = "utf-8"
