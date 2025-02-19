@@ -12,14 +12,40 @@ from src.logger_definition import get_logger
 logger = get_logger(__file__)
 
 
-class CampaignContextManager:
+class CampaignManager:
     """
-    Service for selecting a Forgotten Realms adventure starting point using FAISS and OpenAI GPT.
+    Service for generating a complete Dungeons & Dragons one-shot campaign in the Forgotten Realms.
+
+    This class selects a campaign setting, retrieves relevant world elements, and generates a fully
+    formatted adventure using GPT-4, structured according to a D&D module format.
+
+    Dependencies:
+        - FAISS: Vector search for retrieving locations, characters, creatures, items, and lore.
+        - NetworkX: Knowledge graph (`forgotten_realms_graph.gml`) for hierarchical world navigation
+
+    Attributes:
+        location_service (LLMService): LLM for selecting adventure locations.
+        campaign_creation_service (LLMService): LLM for generating the final campaign.
+        embedding_model (OpenAIEmbeddings): Embedding model for FAISS vector search.
+        wiki_graph (networkx.DiGraph): Knowledge graph of Forgotten Realms locations.
+        FAISS databases (FAISS): Stores locations, characters, creatures, items, and historical lore
+
+    Methods:
+        select_campaign_location(user_input: str) -> dict
+            Finds the most thematically appropriate Forgotten Realms setting for the adventure.
+        select_campaign_elements(selected_location: str, location_summary: str) -> dict
+            Retrieves 10 characters, 10 creatures, 10 items, and 20 historical/cultural facts.
+        generate_campaign(user_input: str) -> dict
+            Calls the above methods and generates a fully formatted adventure using GPT-4.
     """
 
     def __init__(self):
         """Initializes FAISS retrievers and OpenAI LLM service."""
         self.location_service = LLMServiceFactory("gpt3-5", "location-selection").get_service()
+        self.campaign_creation_service = LLMServiceFactory(
+            "gpt-4", "campaign-creation"
+        ).get_service()
+
         self.embedding_model = self.location_service.embedding_model
 
         # Load FAISS vector databases
@@ -211,3 +237,40 @@ class CampaignContextManager:
         }
 
         return adventure_context
+
+    def generate_campaign(self, user_input: str) -> str:
+        """
+        Generates a full D&D one-shot campaign from scratch using user input.
+
+        This method:
+        - Selects an appropriate Forgotten Realms location.
+        - Retrieves relevant characters, creatures, items, and lore.
+        - Calls GPT-4 to generate a complete campaign based on the D&D One-Shot Template.
+
+        Args:
+            user_input (str): A brief description of the type of adventure the user wants.
+
+        Returns:
+            str: The generated campaign text.
+        """
+        # Select the campaign location
+        location_output = self.select_campaign_location(user_input)
+
+        # Retrieve campaign elements (characters, creatures, items, lore)
+        campaign_elements = self.select_campaign_elements(
+            location_output["selected_location"], location_output["location_summary"]
+        )
+
+        if not self.campaign_creation_service.initial_prompt:
+            raise ValueError("Missing system prompt for campaign creation service")
+
+        campaign_creation_prompt = self.campaign_creation_service.initial_prompt.format(
+            selected_location=campaign_elements["selected_location"],
+            location_summary=campaign_elements["location_summary"],
+            characters=", ".join(campaign_elements["characters"]),
+            creatures=", ".join(campaign_elements["creatures"]),
+            items=", ".join(campaign_elements["items"]),
+            cultural_facts=", ".join(campaign_elements["cultural_facts"]),
+        )
+
+        return self.campaign_creation_service.generate_formatted_response(campaign_creation_prompt)
