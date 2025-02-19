@@ -53,7 +53,7 @@ def get_llm_service(backend: str, service_type: str) -> LLMService | None:
 @app.post("/chat", response_model=ChatResponse)
 def chat(
     request: ChatRequest,
-    dungeon_master: LLMService = Depends(partial(get_llm_service, "gpt3-5", "dungeon-master")),
+    dungeon_master: LLMService = Depends(partial(get_llm_service, "gpt-4", "dungeon-master")),
     db: Session = Depends(get_db),
 ):
     """Handles chat interactions and injects character stats into the LLM context."""
