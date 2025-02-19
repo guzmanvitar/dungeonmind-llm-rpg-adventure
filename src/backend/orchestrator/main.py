@@ -54,21 +54,18 @@ def get_llm_service(backend: str, service_type: str) -> LLMService | None:
 def chat(
     request: ChatRequest,
     dungeon_master: LLMService = Depends(partial(get_llm_service, "gpt3-5", "dungeon-master")),
-    character_creator: LLMService = Depends(
-        partial(get_llm_service, "gpt3-5", "character-creation")
-    ),
     db: Session = Depends(get_db),
 ):
     """Handles chat interactions and injects character stats into the LLM context."""
     # Initialize character
     if not db.query(Character).first():
-        character_manager = CharacterManager(db, character_creator)
+        character_manager = CharacterManager(db, "gpt3-5")
         return character_manager.initialize_character(request)
 
     # Initialize story
     current_campaign_dir = DATA_GAME / "active_campaign.txt"
     if not current_campaign_dir.exists():
-        campaign_manager = CampaignManager()
+        campaign_manager = CampaignManager("gpt-4")
         return campaign_manager.initialize_campaign(request)
 
     # Initilize dungeon master service with request conversation history

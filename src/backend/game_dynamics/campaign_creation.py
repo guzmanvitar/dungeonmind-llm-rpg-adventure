@@ -18,7 +18,7 @@ class CampaignManager:
     Service for generating a complete Dungeons & Dragons one-shot campaign in the Forgotten Realms.
 
     This class selects a campaign setting, retrieves relevant world elements, and generates a fully
-    formatted adventure using GPT-4, structured according to a D&D module format.
+    formatted adventure using GPT, structured according to a D&D module format.
 
     Dependencies:
         - FAISS: Vector search for retrieving locations, characters, creatures, items, and lore.
@@ -37,14 +37,16 @@ class CampaignManager:
         select_campaign_elements(selected_location: str, location_summary: str) -> dict
             Retrieves 10 characters, 10 creatures, 10 items, and 20 historical/cultural facts.
         generate_campaign(user_input: str) -> dict
-            Calls the above methods and generates a fully formatted adventure using GPT-4.
+            Calls the above methods and generates a fully formatted adventure using GPT.
     """
 
-    def __init__(self):
+    def __init__(self, campaign_backend: str, location_backend: str = "gpt3-5"):
         """Initializes FAISS retrievers and OpenAI LLM service."""
-        self.location_service = LLMServiceFactory("gpt3-5", "location-selection").get_service()
+        self.location_service = LLMServiceFactory(
+            location_backend, "location-selection"
+        ).get_service()
         self.campaign_creation_service = LLMServiceFactory(
-            "gpt-4", "campaign-creation"
+            campaign_backend, "campaign-creation"
         ).get_service()
 
         self.embedding_model = self.location_service.embedding_model
