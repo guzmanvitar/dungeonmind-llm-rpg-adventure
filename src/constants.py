@@ -21,6 +21,7 @@ DATA_RAW = DATA / "raw"
 DATA_PROCESSED = DATA / "processed"
 
 DATABASE = ROOT / ".db"
+DATABASE_FAISS = DATABASE / "faiss"
 
 MODELS = ROOT / "models"
 
