@@ -20,6 +20,8 @@ DATA = ROOT / "data"
 DATA_RAW = DATA / "raw"
 DATA_PROCESSED = DATA / "processed"
 
+DATA_GAME = DATA / "game_data"
+
 DATABASE = ROOT / ".db"
 DATABASE_FAISS = DATABASE / "faiss"
 
@@ -32,3 +34,4 @@ DATA_RAW.mkdir(exist_ok=True, parents=True)
 DATA_PROCESSED.mkdir(exist_ok=True, parents=True)
 MODELS.mkdir(exist_ok=True)
 DATABASE.mkdir(exist_ok=True)
+DATA_GAME.mkdir(exist_ok=True)

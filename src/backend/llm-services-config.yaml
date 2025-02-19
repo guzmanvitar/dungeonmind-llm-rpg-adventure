@@ -88,6 +88,102 @@ services:
       - Prioritize **dungeons, cities, or landmarks** over general continents or regions.
       - Output the selected location only without leading or trailing special characters
 
+  campaign-creation:
+    initial_prompt: |
+      You are creating a **Dungeons & Dragons One-Shot Campaign** for **level 1 players**.
+
+      **Style Guidelines:**
+      - Epic, high-fantasy theme with immersive worldbuilding.
+      - Use official D&D module summaries (e.g., from Wikipedia) for reference but create an original adventure.
+      - Starting location for the adventure **must** be the main location below
+      - Draw inspiration from the Relevant Adventure Elements below but do not feel restricted by them.
+
+      **Starting Location:**
+      - **Main Location:** {selected_location}
+      - **Location Summary:** {location_summary}
+
+      **Relevant Adventure Elements:**
+      - **Characters:** {characters}
+      - **Creatures:** {creatures}
+      - **Items:** {items}
+      - **Cultural & Historical Lore:** {cultural_facts}
+
+      **D&D One-Shot Campaign Template**
+      1. Campaign Overview
+      Title: (Memorable and thematic, e.g., “The Cursed Obelisk”)
+      Level Range: (E.g., Level 3-5, balanced for a one-shot duration of 3-5 hours)
+      Tone & Theme: (Dark fantasy, high adventure, mystery, horror, political intrigue, etc.)
+      Expected Playtime: (Typical one-shot is 3-5 hours; define pacing accordingly.)
+      Hook: (A single strong motivation that brings the players together.)
+      Key Mechanics or Gimmicks: (E.g., time pressure, investigation, puzzle-solving, moral dilemmas.)
+
+      2. Setting & Worldbuilding
+      Location: (A city, dungeon, village, floating island, etc.)
+      Environmental Features: (Weather, lighting, dangers, special rules like magic disruption.)
+      Factions/Groups: (Who is involved? Rival adventurers, bandit factions, cultists, etc.)
+      Key NPCs: (Major quest givers, rivals, allies, loremasters, villains.)
+      Lore Drop: (One paragraph summary of relevant background lore.)
+
+      3. Adventure Structure
+      (One-shots benefit from a three-act structure for pacing.)
+      Act 1: Introduction & Inciting Incident
+      Starting Location: (A tavern, guild hall, battlefield, airship, etc.)
+      Initial Conflict: (Something that forces players to take action.)
+      First Decision Point: (A moral or tactical choice that shapes the adventure.)
+      Act 2: Exploration & Rising Action
+      Encounters & Challenges: (Balanced mix of combat, exploration, roleplay.)
+      Twist: (A betrayal, unexpected enemy, a moral dilemma.)
+      Complication: (A new obstacle that changes the stakes.)
+      Act 3: Climax & Resolution
+      Final Showdown: (A big battle, social confrontation, escape sequence.)
+      Choice & Consequence: (What final major decision do the players make?)
+      Ending Possibilities: (Victory, tragic loss, twist ending.)
+
+      4. Core Encounters (Combat, Exploration, Social Challenges)
+      (Use at least 3 encounters: one social, one exploration, one combat.) E.g.
+      Type	Encounter Name	Details
+      Social	"The Mysterious Informant"	Players must persuade/intimidate a shady NPC for information.
+      Exploration	"The Sunken Crypt"	A trapped underground ruin with puzzles and shifting architecture.
+      Combat	"The Bone Knight's Last Stand"	A powerful undead warrior with legendary resistance.
+
+      5. Key NPCs & Villains
+      Main Antagonist: (Motivations, personality, combat abilities.)
+      Supporting Cast: (Mentors, rivals, henchmen, neutral figures.)
+      How the NPCs Can Die or Be Avoided: (Allow flexibility.)
+
+      6. Rewards & Magic Items
+      Treasure: (Gold, artifacts, ancient scrolls.)
+      Magic Items: (Limited but useful, such as a Ring of Feather Falling for traversal puzzles.)
+      Reputation Impact: (How the world reacts to the players’ actions.)
+
+      7. Dungeon or Set-Piece Encounters
+      (Optional but useful if the one-shot includes a dungeon crawl.) E.g.
+      Room #	Feature	Challenge
+      1. Entrance Hall	Trapped stone door	Requires solving a riddle to open.
+      2. The Forgotten Shrine	Cursed altar	Players must break a curse or be hexed.
+      3. Vault of the Lost King	Undead guardian	Players fight or negotiate with the spirit.
+
+      8. Timeline & Pacing Guide
+      (For a 4-hour session)
+      Time	Event
+      0:00 - 0:30	Introduction, roleplay, getting the quest.
+      0:30 - 1:30	First challenges, exploration, minor combat.
+      1:30 - 2:30	Midpoint twist, harder combat or dilemma.
+      2:30 - 3:30	Final battle or puzzle-solving climax.
+      3:30 - 4:00	Epilogue and aftermath.
+
+      9. Optional Mechanics
+      (Consider including special mechanics for added depth.)
+      Time Pressure: (A countdown mechanic to create urgency.)
+      Puzzle Mechanics: (Unique ways to solve problems beyond skill checks.)
+      Morality Choices: (A major ethical dilemma players must resolve.)
+      Wildcard Events: (Unpredictable things like a random storm, betrayal, or NPC interference.)
+      ---
+
+      ** Generate a complete one-shot campaign following this structure, incorporating the setting
+      and elements where appropriate. Include the location and a brief location summary in the output.
+      Be creative and ensure an engaging, memorable adventure.**
+
   prompt-tester:
     initial_prompt: |
       You are an LLM output tester. Your task is to determine whether the LLM output meets the given criterion.

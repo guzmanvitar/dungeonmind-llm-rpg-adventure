@@ -5,8 +5,9 @@ import random
 import networkx as nx
 from langchain_community.vectorstores import FAISS
 
+from src.backend.orchestrator.models import ChatRequest, ChatResponse
 from src.backend.orchestrator.services import LLMServiceFactory
-from src.constants import DATABASE, DATABASE_FAISS
+from src.constants import DATA_GAME, DATABASE, DATABASE_FAISS
 from src.logger_definition import get_logger
 
 logger = get_logger(__file__)
@@ -274,3 +275,59 @@ class CampaignManager:
         )
 
         return self.campaign_creation_service.generate_formatted_response(campaign_creation_prompt)
+
+    def initialize_campaign(
+        self, request: ChatRequest, file_name: str = "active_campaign.txt"
+    ) -> ChatResponse:
+        """
+        Handles campaign initialization based on user starting location prompt response.
+
+        Args:
+            request (ChatRequest): User response to the "where does your story begin" prompt.
+
+        Returns:
+            ChatResponse: A system message embedding the campaign into the LLM context.
+        """
+        campaign_file = DATA_GAME / file_name
+
+        # Generate a new campaign
+        campaign_text = self.generate_campaign(request.user_message)
+
+        # Save the campaign to a file
+        with open(campaign_file, "w", encoding="utf-8") as f:
+            f.write(campaign_text)
+
+        # Create campaign metadata
+        campaign_metadata = [
+            {
+                "role": "system",
+                "content": "Game Context: The following will be the campaign setting for all of the"
+                " session. From now on guide the player through this campaign's story. Do not"
+                " reveal any elements of the story ahead of time. Let him explore and uncover.",
+            },
+            {"role": "system", "content": campaign_text},
+        ]
+
+        # Get first campaign message
+        campaign_start_prompt = f"""
+        You are a DnD dungeon master guiding the player through an adventure.
+
+        Based on the campaign structure below, write the **first message** to welcome the player,
+        place them in their **starting location**, and prompt them to begin playing.
+
+        ### Rules:
+        - **Be epic and mysterious**—you are opening the first page of a new story.
+        - **Limit your response to a maximum of 3 short paragraphs** (150 tokens max).
+        - **Do NOT reveal** any characters the player wouldnt logically know.
+        - **Do NOT mention** items, encounters, rewards, or game mechanics yet.
+        - **Focus only on setting the tone and getting the player to explore.**
+
+        ### Campaign Structure:
+        {campaign_text}
+        """
+
+        start_message = self.campaign_creation_service.generate_formatted_response(
+            campaign_start_prompt
+        )
+
+        return ChatResponse(assistant_message=start_message, metadata=campaign_metadata)
