@@ -3,6 +3,7 @@
 from urllib.parse import urljoin
 
 import scrapy
+from bs4 import BeautifulSoup
 
 from src.scrapers.items import WikiPageItem
 
@@ -31,9 +32,18 @@ class ForgottenRealmsSpider(scrapy.Spider):
         title = response.css("#firstHeading > span::text").get()
         title = title.strip() if title else "Unknown"
 
-        # Extract text content
-        paragraphs = response.css("div.mw-parser-output p::text").getall()
-        content = " ".join(paragraphs).strip()
+        # Extract full paragraph content, including inline elements
+        paragraphs = response.css("div.mw-parser-output p").getall()
+
+        # Use BeautifulSoup to preserve inline links and spans
+        cleaned_paragraphs = []
+        for paragraph in paragraphs:
+            soup = BeautifulSoup(paragraph, "html.parser")
+            text = soup.get_text(" ", strip=True)
+            cleaned_paragraphs.append(text)
+
+        # Join paragraphs into a single text block
+        content = " ".join(cleaned_paragraphs)
 
         # Extract categories
         categories = response.css(".page-header__categories-in + a::text").getall()
