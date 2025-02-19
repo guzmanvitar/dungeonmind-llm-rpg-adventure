@@ -79,6 +79,19 @@ async function sendMessage() {
     chatLog.innerHTML += `<p><strong>You:</strong> ${userInput}</p>`;
     scrollToBottom(chatLog);
 
+    // ✅ Create loading message with animation
+    let loadingElement = document.createElement("p");
+    loadingElement.innerHTML = `<strong>Dungeon Master:</strong> <span id="loading-text">Thinking</span>`;
+    chatLog.appendChild(loadingElement);
+    scrollToBottom(chatLog);
+
+    // ✅ Animate ellipsis effect on "Thinking..."
+    let dots = 0;
+    const loadingInterval = setInterval(() => {
+        dots = (dots + 1) % 4;
+        document.getElementById("loading-text").innerText = "Thinking" + ".".repeat(dots);
+    }, 500);
+
     try {
         const response = await fetch("http://127.0.0.1:8000/chat", {
             method: "POST",
@@ -101,6 +114,10 @@ async function sendMessage() {
         // ✅ Then, add assistant's response to chat history
         chatHistory.push({ role: "assistant", content: data.assistant_message });
 
+        // ✅ Remove loading message
+        clearInterval(loadingInterval);
+        loadingElement.remove();
+
         // ✅ Only display non-hidden messages
         let messageElement = document.createElement("p");
         messageElement.innerHTML = "<strong>Dungeon Master:</strong> ";
@@ -113,6 +130,7 @@ async function sendMessage() {
         sessionStorage.setItem("chatHistory", JSON.stringify(chatHistory));
     } catch (error) {
         console.error("Error:", error);
+        clearInterval(loadingInterval);
         chatLog.innerHTML += `<p><strong>Error:</strong> Failed to get response.</p>`;
         scrollToBottom(chatLog);
     }
