@@ -318,7 +318,7 @@ class CampaignManager:
         place them in their **starting location**, and prompt them to begin playing.
 
         ### Rules:
-        - **Be epic and mysterious**—you are opening the first page of a new story.
+        - Make the introduction to the adventure engaging.
         - **Limit your response to a maximum of 3 short paragraphs** (150 tokens max).
         - **Do NOT reveal** any characters the player wouldnt logically know.
         - **Do NOT mention** items, encounters, rewards, or game mechanics yet.
