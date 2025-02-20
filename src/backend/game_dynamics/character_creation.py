@@ -13,7 +13,7 @@ from src.backend.database.models import (
     Race,
 )
 from src.backend.orchestrator.models import ChatRequest, ChatResponse
-from src.backend.orchestrator.services import LLMService
+from src.backend.orchestrator.services import LLMServiceFactory
 from src.logger_definition import get_logger
 from src.utils import weighted_random_stat
 
@@ -50,9 +50,11 @@ class CharacterCreationError(Exception):
 class CharacterManager:
     """Handles character creation, retrieval, and description for DungeonMind."""
 
-    def __init__(self, db: Session, character_service: LLMService):
+    def __init__(self, db: Session, character_backend: str):
         self.db = db
-        self.character_service = character_service
+        self.character_service = LLMServiceFactory(
+            character_backend, "character-creation"
+        ).get_service()
 
     def get_available_options(self):
         """Fetch all available races, classes, and backgrounds from the database."""
@@ -291,8 +293,8 @@ class CharacterManager:
         char_metadata = [
             {
                 "role": "system",
-                "content": "Game Context: As Dungeon Master you are aware of the character's stats"
-                " and abilities.",
+                "content": "Game Context: As Dungeon Master you are aware of the character's name,"
+                " stats and abilities.",
             },
             {"role": "system", "content": character_summary},
         ]

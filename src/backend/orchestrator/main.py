@@ -7,18 +7,18 @@ It processes user input, maintains conversation history, and generates AI-driven
 
 from functools import partial
 
-import yaml
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from src.backend.database.models import Character
+from src.backend.game_dynamics.campaign_creation import CampaignManager
 from src.backend.game_dynamics.character_creation import CharacterManager
 from src.backend.orchestrator.models import ChatRequest, ChatResponse
 from src.backend.orchestrator.routes.character import router as character_router
 from src.backend.orchestrator.services import LLMService, LLMServiceFactory
 from src.backend.utils import get_db
-from src.constants import BACKEND_CONFIG
+from src.constants import DATA_GAME
 from src.logger_definition import get_logger
 
 logger = get_logger(__file__)
@@ -41,13 +41,10 @@ app.add_middleware(
 
 
 # Get db and llm services
-def get_llm_service(service_type: str) -> LLMService | None:
+def get_llm_service(backend: str, service_type: str) -> LLMService | None:
     """Dependency injection for selecting the LLM service."""
     # Initialize LLMServiceFactory with selected backend
-    with open(BACKEND_CONFIG, encoding="utf-8") as file:
-        selected_backend = yaml.safe_load(file).get("selected_backend", "samplev1")
-
-    service_factory = LLMServiceFactory(selected_backend, service_type)
+    service_factory = LLMServiceFactory(backend, service_type)
     llm_service = service_factory.get_service()
 
     return llm_service
@@ -56,21 +53,25 @@ def get_llm_service(service_type: str) -> LLMService | None:
 @app.post("/chat", response_model=ChatResponse)
 def chat(
     request: ChatRequest,
-    dungeon_master: LLMService = Depends(partial(get_llm_service, "dungeon-master")),
-    character_creator: LLMService = Depends(partial(get_llm_service, "character-creation")),
+    dungeon_master: LLMService = Depends(partial(get_llm_service, "gpt-4", "dungeon-master")),
     db: Session = Depends(get_db),
 ):
     """Handles chat interactions and injects character stats into the LLM context."""
     # Initialize character
     if not db.query(Character).first():
-        character_manager = CharacterManager(db, character_creator)
+        character_manager = CharacterManager(db, "gpt3-5")
         return character_manager.initialize_character(request)
+
+    # Initialize story
+    current_campaign_dir = DATA_GAME / "active_campaign.txt"
+    if not current_campaign_dir.exists():
+        campaign_manager = CampaignManager("gpt-4")
+        return campaign_manager.initialize_campaign(request)
 
     # Initilize dungeon master service with request conversation history
     dungeon_master.conversation_history = request.conversation_history
 
-    # Append message to llm chat history and generate next response
-    dungeon_master.conversation_history.append({"role": "user", "content": request.user_message})
+    # Generate next response
     assistant_reply = dungeon_master.chat_completion()
 
     return ChatResponse(assistant_message=assistant_reply, metadata=[])
