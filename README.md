@@ -152,6 +152,7 @@ uv run src/frontend/app.py
 🔲 Fetch relevant D&D rule explanations dynamically
 
 🔲 **Phase 3: Interactive Game Elements & AI Dungeon Master Improvements**
+
 ✅ Campaign generation using structured templates & AI storytelling
 
 ✅ Six-encounter adventure structure for deeper narratives
