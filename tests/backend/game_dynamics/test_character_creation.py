@@ -29,11 +29,7 @@ def test_parse_character_from_text(test_case):
     Tests `parse_character_from_text` using exact match and LLM-based evaluation.
     """
     # Initialize character_manager llm service
-    character_creator = LLMServiceFactory("gpt3-5", "character-creation").get_service()
-    if not character_creator:
-        raise ValueError("Character service creation failed")
-
-    character_manager = CharacterManager(mock_db, character_creator)
+    character_manager = CharacterManager(mock_db, "gpt3-5")
 
     # Load test input and expected values
     input_text = test_case["prompt"]
