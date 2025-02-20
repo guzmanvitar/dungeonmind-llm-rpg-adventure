@@ -134,25 +134,38 @@ uv run src/frontend/app.py
 ## 🔮 Roadmap (Upcoming Features)
 
 ✅ **Phase 1: Core AI Dungeon Master**
+
 ✅ Character creation with race, class, and background
+
 ✅ Integrated chat interface with persistent history
 
 🔲 **Phase 2: RAG for Game Mechanics & Lore**
+
 ✅ Web crawler for Forgotten Realms Wiki to extract world data
+
 ✅ Knowledge graph (NetworkX) for structured world representation
+
 ✅ FAISS vector search for retrieving world elements dynamically
+
 🔲 Implement ability score retrieval using stored API data
+
 🔲 Fetch relevant D&D rule explanations dynamically
 
 🔲 **Phase 3: Interactive Game Elements & AI Dungeon Master Improvements**
 ✅ Campaign generation using structured templates & AI storytelling
+
 ✅ Six-encounter adventure structure for deeper narratives
+
 🔲 Explicit inventory & spell tracking
+
 🔲 Support dice roll mechanics using AI-driven adjudication
+
 🔲 Implement automated session memory summarization to retain key decisions
 
 🔲 **Phase 4: Multiplayer Co-op Mode**
+
 🔲 Allow multiple players to join the same session
+
 🔲 Implement NPCs and shared game world state
 
 
