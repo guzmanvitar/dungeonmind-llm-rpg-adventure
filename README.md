@@ -18,7 +18,10 @@ It leverages Large Language Models (LLMs) for inmersive, interactive, and ever-n
 | **Backend**   | FastAPI (Python)         |
 | **LLM Service** | OpenAI API (GPT-4, GPT-3.5) |
 | **Storage**   | SQLite for game state persistence |
-| **Vector Search** | (Planned) Pinecone/Qdrant for rule retrieval |
+| **Vector Search** | FAISS (retrieval-augmented generation for campaign elements) |
+| **Knowledge Graph** | NetworkX (Forgotten Realms world structure) |
+| **Web Crawling** | Scrapy + BeautifulSoup (Forgotten Realms Wiki extraction) |
+
 
 ## 🎲 Game Mechanics
 
@@ -37,8 +40,34 @@ Additionally, the system calculates:
 - **Armor Class (AC):** Determined by starting armor and Dexterity modifier.
 - **Gold & Inventory:** The starting equipment is automatically assigned based on class and background.
 
-### 📊 Database ER Diagram
+📊 **Database ER Diagram**
 ![DatabaseDiagram](https://github.com/user-attachments/assets/d0a12974-c676-4585-af2e-4a49c38db871)
+
+### 🗺️ Campaign Creation & World Generation
+The system dynamically generates Dungeons & Dragons one-shot campaigns set in the Forgotten Realms, ensuring each adventure is immersive, well-structured, and unique. This is achieved using a combination of web crawling, graph-based world modeling, vector search for lore retrieval, and large language models (LLMs) for storytelling.
+
+**🌍 Intelligent Worldbuilding with Web Crawling, Graphs & FAISS**
+To create a rich, lore-accurate game world, we implemented:
+
+- 🕷️ Web Crawler (Scrapy + BeautifulSoup) – Extracts structured world data from the Forgotten Realms Wiki, capturing locations, characters, creatures, factions, and history.
+- 📖 Knowledge Graph (NetworkX) – Represents Forgotten Realms as an interconnected web of regions, cities, dungeons, and historical events, preserving hierarchical relationships between locations.
+- 🧠 FAISS Vector Search – Enables fast retrieval of relevant lore elements (NPCs, monsters, historical events) based on the player’s starting location and campaign theme.
+- 📝 Hierarchical Location Selection – Ensures the campaign starts in a specific, lore-rich location, moving from broad continents to detailed cities, settlements, or dungeons.
+
+**🎭 Dynamic Adventure Structure**
+The generated campaigns follow a D&D One-Shot Adventure Template, including:
+
+- 🏰 Setting & Worldbuilding – The player begins in a well-defined world with key factions, environmental features, and historical context.
+- ⚔️ Core Encounters – A balanced mix of social interactions, exploration challenges, and combat encounters, ensuring a compelling and well-paced adventure.
+- 🎲 Narrative Flexibility – Players influence the world through their decisions, with branching paths affecting encounters, rewards, and world reactions.
+
+**📝 Procedural Campaign Generation**
+When a campaign is initialized:
+
+- 📍 The system selects an optimal adventure setting based on the user's stated starting point using FAISS similarity search over the extracted Forgotten Realms locations.
+- 🔎 Relevant world elements (characters, creatures, items, lore) are retrieved to populate the adventure with meaningful content.
+- 🖋️ GPT-4 generates a fully written campaign following the structured one-shot template, seamlessly integrating retrieved lore.
+- 📂 The campaign is stored and referenced dynamically to ensure consistency throughout gameplay.
 
 
 ## 📁 Project Structure
@@ -108,13 +137,19 @@ uv run src/frontend/app.py
 ✅ Character creation with race, class, and background
 ✅ Integrated chat interface with persistent history
 
-🔲 **Phase 2: RAG for Game Mechanics**
+🔲 **Phase 2: RAG for Game Mechanics & Lore**
+✅ Web crawler for Forgotten Realms Wiki to extract world data
+✅ Knowledge graph (NetworkX) for structured world representation
+✅ FAISS vector search for retrieving world elements dynamically
 🔲 Implement ability score retrieval using stored API data
 🔲 Fetch relevant D&D rule explanations dynamically
 
-🔲 **Phase 3: Interactive Game Elements**
-🔲 Add inventory & spell tracking
+🔲 **Phase 3: Interactive Game Elements & AI Dungeon Master Improvements**
+✅ Campaign generation using structured templates & AI storytelling
+✅ Six-encounter adventure structure for deeper narratives
+🔲 Explicit inventory & spell tracking
 🔲 Support dice roll mechanics using AI-driven adjudication
+🔲 Implement automated session memory summarization to retain key decisions
 
 🔲 **Phase 4: Multiplayer Co-op Mode**
 🔲 Allow multiple players to join the same session
