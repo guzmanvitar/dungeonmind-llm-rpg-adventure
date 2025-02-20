@@ -154,37 +154,68 @@ services:
       Key NPCs: (Major quest givers, rivals, allies, loremasters, villains.)
       Lore Drop: (One paragraph summary of relevant background lore.)
 
-      3. Adventure Structure
-      (One-shots benefit from a three-act structure for pacing.)
-      Act 1: Introduction & Inciting Incident
-      Starting Location: (A tavern, guild hall, battlefield, airship, etc.)
-      Initial Conflict: (Something that forces players to take action.)
-      First Decision Point: (A moral or tactical choice that shapes the adventure.)
-      Act 2: Exploration & Rising Action
-      Encounters & Challenges: (Balanced mix of combat, exploration, roleplay.)
-      Twist: (A betrayal, unexpected enemy, a moral dilemma.)
-      Complication: (A new obstacle that changes the stakes.)
-      Act 3: Climax & Resolution
-      Final Showdown: (A big battle, social confrontation, escape sequence.)
-      Choice & Consequence: (What final major decision do the players make?)
-      Ending Possibilities: (Victory, tragic loss, twist ending.)
+      3. Core Encounters
+      Each campaing will have 6 core encounters, usually ballanced between social, exploration and combat,
+      but balance can change if a campaign is more social or more combat based.
+      E.g.
+      | Type | Encounter Name | Details |
+      |------|---------------------|---------|
+      | **Social** | "The Mysterious Informant" | Players must persuade/intimidate a shady NPC for information. |
+      | **Exploration** | "The Sunken Crypt" | A trapped underground ruin with puzzles and shifting architecture. |
+      | **Combat** | "The Bone Knight's Last Stand" | A powerful undead warrior with legendary resistance. |
+      | **Social** | "The High Court's Bargain" | Players must negotiate with a noble, merchant guild, or council to gain favor. |
+      | **Exploration** | "The Shattered Portal" | A malfunctioning portal sends players to a strange plane or vision of the past. |
+      | **Combat** | "The Chimera’s Den" | A multi-stage battle against a mutated or magically enhanced beast. |
 
-      4. Core Encounters (Combat, Exploration, Social Challenges)
-      (Use at least 3 encounters: one social, one exploration, one combat.) E.g.
-      Type	Encounter Name	Details
-      Social	"The Mysterious Informant"	Players must persuade/intimidate a shady NPC for information.
-      Exploration	"The Sunken Crypt"	A trapped underground ruin with puzzles and shifting architecture.
-      Combat	"The Bone Knight's Last Stand"	A powerful undead warrior with legendary resistance.
+      Each encounter should:
+      - Tie into the campaign's central mystery, theme, or villain.
+      - Present meaningful choices with potential consequences.
+      - Offer varied gameplay: intrigue, investigation, survival, and action.
+
+      **Optional Encounter Modifications:**
+      - Add a time-sensitive event (e.g., escaping a collapsing ruin).
+      - Include a moral dilemma (e.g., sparing an enemy or gaining forbidden knowledge).
+      - Allow different solutions (e.g., diplomacy, stealth, combat).
+
+      4. Adventure Structure
+      The campaign will follow a three act structure with two encounters each. Use the example below
+      but, as always, be creative.
+      E.g.
+      #Act 1: Introduction & Inciting Incident
+      - **Starting Location:** (A tavern, guild hall, battlefield, airship, etc.)
+      - **Initial Conflict:** (Something that forces players to take action.)
+      - **Encounter 1 - Social:** (A meaningful interaction that sets the stage—gathering information, negotiating, or uncovering deception.)
+      - **Encounter 2 - Exploration:** (A journey, puzzle, or discovery moment—exploring ruins, navigating dangerous terrain, unlocking secrets.)
+      - **First Decision Point:** (A moral or tactical choice that shapes the adventure.)
+
+      # Act 2: Exploration & Rising Action
+      - **Encounter 3 - Combat:** (An initial battle or skirmish—ambush, monster attack, or faction conflict.)
+      - **Encounter 4 - Social:** (A turning point through diplomacy, deception, or alliances.)
+      - **Twist:** (A betrayal, unexpected enemy, a moral dilemma.)
+      - **Complication:** (A new obstacle that changes the stakes—reinforcements arrive, a time-sensitive goal emerges, or the setting shifts dramatically.)
+
+      # Act 3: Climax & Resolution
+      - **Encounter 5 - Exploration:** (A critical moment of discovery—a hidden lair, a sacred artifact, or a forbidden ritual.)
+      - **Encounter 6 - Final Combat:** (A climactic battle against the primary antagonist, a powerful monster, or an army.)
+      - **Final Decision:** (A dramatic choice that alters the world—destroying an artifact, sparing a villain, unleashing chaos.)
+      - **Ending Possibilities:** (Victory, tragic loss, twist ending.)
 
       5. Key NPCs & Villains
       Main Antagonist: (Motivations, personality, combat abilities.)
       Supporting Cast: (Mentors, rivals, henchmen, neutral figures.)
       How the NPCs Can Die or Be Avoided: (Allow flexibility.)
 
-      6. Rewards & Magic Items
-      Treasure: (Gold, artifacts, ancient scrolls.)
-      Magic Items: (Limited but useful, such as a Ring of Feather Falling for traversal puzzles.)
-      Reputation Impact: (How the world reacts to the players’ actions.)
+      6. Hidden Items, Gold & Magic Artifacts
+      Players can find and earn additional loot beyond the main story through exploration, puzzles, and interactions.
+      E.g.
+      | Name | Type | Act/Location | How to Find | How to Gain |
+      |------|------|-------------|-------------|-------------|
+      | **Ring of Forgotten Kings** | Magic Item | Act 2, The Sunken Crypt | Hidden in a collapsed sarcophagus | Requires Strength (Athletics) 15 to lift or Detect Magic to sense its presence |
+      | **Moonsteel Dagger** | Weapon | Act 1, The Mysterious Informant's Hideout | Hidden behind a false wall in a tavern cellar | Requires Investigation 14 to find and Persuasion 12 to convince the informant to hand it over |
+      | **Sapphire Sigil** | Valuable Treasure | Act 3, The Vault of the Lost King | Locked inside an ancient chest with an enchanted seal | Requires Arcana 16 or a dispel magic spell to unlock |
+      | **Tideforged Gauntlets** | Armor | Act 2, The Shattered Portal | Found on a ruined statue in a flooded temple | Requires Dexterity (Acrobatics) 13 to reach without falling into deep water |
+      | **Bloodstained Ledger** | Information | Act 1, The High Court's Bargain | Hidden in the archives of a noble estate | Requires Stealth 14 or bribing a guard with 10 GP |
+      | **Ancient Coin Hoard (120 GP)** | Gold | Act 3, The Chimera's Den | Buried under the remains of a fallen beast | Requires Survival 12 or a detection spell to notice the hidden stash |
 
       7. Dungeon or Set-Piece Encounters
       (Optional but useful if the one-shot includes a dungeon crawl.) E.g.
@@ -193,14 +224,15 @@ services:
       2. The Forgotten Shrine	Cursed altar	Players must break a curse or be hexed.
       3. Vault of the Lost King	Undead guardian	Players fight or negotiate with the spirit.
 
-      8. Timeline & Pacing Guide
-      (For a 4-hour session)
-      Time	Event
-      0:00 - 0:05	Introduction, roleplay, getting the quest.
-      0:05 - 1:00	First challenges, exploration, minor combat.
-      1:00 - 1:30	Midpoint twist, harder combat or dilemma.
-      1:30 - 2:00	Final battle or puzzle-solving climax.
-      2:00 - 2:30	Epilogue and aftermath.
+      8. Timeline & Pacing Guide (For a 4-Hour Session)
+      | Time | Event |
+      |------|--------|
+      | **0:00 - 0:10** | Introduction, roleplay, getting the quest. |
+      | **0:10 - 0:40** | First two encounters. |
+      | **0:40 - 1:10** | First major conflict (combat encounter?) |
+      | **1:10 - 1:40** | Midpoint twist, (social challenge?) |
+      | **1:40 - 2:10** | Second exploration challenge, leading to final combat. |
+      | **2:10 - 2:30** | Climax, final battle, resolution, and aftermath. |
 
       9. Optional Mechanics
       (Consider including special mechanics for added depth.)
