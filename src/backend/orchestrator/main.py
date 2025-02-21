@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session
 from src.backend.database.models import Character
 from src.backend.game_dynamics.campaign_creation import CampaignManager
 from src.backend.game_dynamics.character_creation import CharacterManager
+from src.backend.game_dynamics.game_state_manager import GameStateManager
 from src.backend.orchestrator.models import ChatRequest, ChatResponse
 from src.backend.orchestrator.routes.character import router as character_router
 from src.backend.orchestrator.services import LLMService, LLMServiceFactory
@@ -40,7 +41,6 @@ app.add_middleware(
 )
 
 
-# Get db and llm services
 def get_llm_service(backend: str, service_type: str) -> LLMService | None:
     """Dependency injection for selecting the LLM service."""
     # Initialize LLMServiceFactory with selected backend
@@ -68,13 +68,20 @@ def chat(
         campaign_manager = CampaignManager("gpt-4")
         return campaign_manager.initialize_campaign(request)
 
-    # Initilize dungeon master service with request conversation history
-    dungeon_master.conversation_history = request.conversation_history
+    # Manage chat history & summarization
+    game_state_manager = GameStateManager("gpt-4")
+    current_history = game_state_manager.manage_chat_history(request)
+    print(current_history)
+
+    # Initilize dungeon master service with conversation history
+    dungeon_master.conversation_history = current_history
 
     # Generate next response
     assistant_reply = dungeon_master.chat_completion()
 
-    return ChatResponse(assistant_message=assistant_reply, metadata=[])
+    return ChatResponse(
+        assistant_message=assistant_reply, metadata=[], conversation_history=current_history
+    )
 
 
 # Run the server with Uvicorn (if running locally, use `uvicorn main:app --reload`)
