@@ -157,11 +157,11 @@ uv run src/frontend/app.py
 
 ✅ Six-encounter adventure structure for deeper narratives
 
+✅ Implement automated session memory summarization to retain key decisions
+
 🔲 Explicit inventory & spell tracking
 
 🔲 Support dice roll mechanics using AI-driven adjudication
-
-🔲 Implement automated session memory summarization to retain key decisions
 
 **Phase 4: Multiplayer Co-op Mode**
 
