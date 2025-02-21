@@ -23,7 +23,11 @@ class ChatResponse(BaseModel):
 
     Attributes:
         assistant_message (str): The AI-generated response.
+        metadata (str): Hidden context
+        conversation_history (List[Dict[str, str]]): The chat history including system and assistant
+        messages.
     """
 
     assistant_message: str
-    metadata: list[dict[str, str]] | None = None  # Metadata stores hidden context
+    metadata: list[dict[str, str]] | None = None
+    conversation_history: list[dict[str, str]] = []

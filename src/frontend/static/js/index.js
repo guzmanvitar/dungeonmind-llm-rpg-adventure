@@ -106,6 +106,11 @@ async function sendMessage() {
 
         const data = await response.json();
 
+        // ✅ Overwrite chatHistory if API provides a full history
+        if (data.conversation_history) {
+            chatHistory = data.conversation_history;
+        }
+
         // ✅ First, push metadata into history (but don't display)
         if (data.metadata) {
             data.metadata.forEach((meta) => chatHistory.push(meta));

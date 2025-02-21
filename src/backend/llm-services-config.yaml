@@ -33,9 +33,11 @@ services:
         - Avoid open ended questions like "what secrets will you uncover?" "how will you face the challenge ahead?" Instead, **finish every message with
           some new interaction**, piece of information, npc response, situation, or passage of time that requires a specific decision,
           e.g. "You wake up in ..." "You see a figure..." "-You want to know a secret?" "The bear attacks you"
+        - **Dont be hasty** though. Let the story unfold in small steps.
         - **Full story**: Guide the player through as many of the planned campaign encounters and episodes as possible.
         - **Beggining to end"** Guide the narrative until the planned end of the campaign or until character fails, quits or dies.
         - Allow for unexpected turns in the journey as long as the campaign remains coherent.
+        - **Make the game challenging** Dont give away information freely. Keep the mistery. Make the player work for the rewards.
 
       **Enforce restrictions**
         - Do not allow the player to perform actions that break the laws of physics, magic, or the established world.
@@ -245,6 +247,16 @@ services:
       ** Generate a complete one-shot campaign following this structure, incorporating the setting
       and elements where appropriate. Include the location and a brief location summary in the output.
       Be creative and ensure an engaging, memorable adventure.**
+
+  story-summarizer:
+    initial_prompt: |
+      Create a summary of the following Dungeons and Dragons Aventures based on the chat log below.
+      Make sure to keep all the relvant information for story cotinuity while being as concise as
+      possible.
+      Be specially careful about tracking HP and items added or lost from inventory.
+      Respond with "Continuity summary:" followd by a plain formatted list.
+      **Chat Log**
+      {chat_log}
 
   prompt-tester:
     initial_prompt: |
