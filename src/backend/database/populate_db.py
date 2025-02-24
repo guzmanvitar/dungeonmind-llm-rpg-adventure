@@ -11,6 +11,10 @@ from src.backend.database.models import (
     Race,
     Trait,
 )
+from src.logger_definition import get_logger
+
+logger = get_logger(__file__)
+
 
 # -- Raw Data ---
 # Traits
@@ -1674,7 +1678,7 @@ def bulk_insert(session: Session):
     session.add_all(races)
     session.commit()
 
-    print("✅ Races successfully populated along with their Trait mappings!")
+    logger.info("✅ Races successfully populated along with their Trait mappings!")
 
     session.add_all(proficiencies)
     session.commit()
@@ -1708,7 +1712,7 @@ def bulk_insert(session: Session):
 
     session.add_all(classes)
     session.commit()
-    print(
+    logger.info(
         "✅ Classes successfully populated along with their proficiencies and starting equipments!"
     )
 
@@ -1734,7 +1738,7 @@ def bulk_insert(session: Session):
 
     session.add_all(backgrounds)
     session.commit()
-    print(
+    logger.info(
         "✅ Backgrounds successfully populated along with their proficiencies and starting"
         " equipments"
     )
