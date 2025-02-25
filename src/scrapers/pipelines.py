@@ -8,7 +8,11 @@ from langchain_community.vectorstores import FAISS
 
 from src.backend.orchestrator.services import OpenAIService
 from src.constants import DATABASE
+from src.logger_definition import get_logger
 from src.scrapers.items import WikiPageItem
+
+logger = get_logger(__file__)
+
 
 # Paths for saving databases
 GRAPH_SAVE_PATH = DATABASE / "forgotten_realms_graph.gml"
@@ -66,7 +70,7 @@ class WikiGraphPipeline:
         # Initialize vector stores
         FAISS_DB_PATH.mkdir(exist_ok=True)
         for category in set(CATEGORY_MAPPING.values()):
-            print(f"Creating new FAISS database for {category}...")
+            logger.info(f"Creating new FAISS database for {category}...")
             self.vector_stores[category] = None  # Will be initialized on first insert
 
     def open_spider(self, spider):

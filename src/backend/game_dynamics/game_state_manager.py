@@ -3,6 +3,10 @@ import json
 from src.backend.orchestrator.models import ChatRequest
 from src.backend.orchestrator.services import LLMServiceFactory
 from src.constants import DATA_GAME
+from src.logger_definition import get_logger
+
+logger = get_logger(__file__)
+
 
 CHAT_HISTORY_FILE = DATA_GAME / "active_campaign_chat_history.json"
 
@@ -80,5 +84,7 @@ class GameStateManager:
             msg for msg in request.conversation_history if msg["role"] != "system"
         ]
         if len(non_system_messages) >= 16:
-            return self.summarize_history(request.conversation_history)
+            summarized_story = self.summarize_history(request.conversation_history)
+            logger.info("Story summarized, current summary: \n %s", summarized_story)
+            return summarized_story
         return request.conversation_history

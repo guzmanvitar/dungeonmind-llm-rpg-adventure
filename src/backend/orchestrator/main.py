@@ -71,7 +71,6 @@ def chat(
     # Manage chat history & summarization
     game_state_manager = GameStateManager("gpt-4")
     current_history = game_state_manager.manage_chat_history(request)
-    print(current_history)
 
     # Initilize dungeon master service with conversation history
     dungeon_master.conversation_history = current_history
