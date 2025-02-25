@@ -314,7 +314,7 @@ class CampaignManager:
         campaign_start_prompt = f"""
         You are a DnD dungeon master guiding the player through an adventure.
 
-        Based on the campaign structure below, write the **first message** to welcome the player,
+        Based on the campaign summary below, write the **first message** to welcome the player,
         place them in their **starting location**, and prompt them to begin playing.
 
         ### Rules:
@@ -322,7 +322,7 @@ class CampaignManager:
         - **Limit your response to a maximum of 3 short paragraphs** (150 tokens max).
         - **Do NOT reveal** any characters the player wouldnt logically know.
         - **Do NOT mention** items, encounters, rewards, or game mechanics yet.
-        - **Focus only on setting the tone and getting the player to explore.**
+        - **Focus on describing the initial location and what led the player there.**
 
         ### Campaign Structure:
         {campaign_text}
